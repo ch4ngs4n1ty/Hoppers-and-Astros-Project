@@ -1,11 +1,15 @@
 package puzzles.hoppers.model;
 
+import puzzles.common.Coordinates;
 import puzzles.common.solver.Configuration;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.*;
 
 // TODO: implement your HoppersConfig for the common solver
 
@@ -14,10 +18,19 @@ public class HoppersConfig implements Configuration{
     private static int rows;
     private static int cols;
     private char grid[][];
+    private LinkedHashMap<String, List<Coordinates>> character;
+
+    String GREEN_FROG = "G";
+    String RED_FROG = "R";
+    String EMPTY = ".";
+    String INVALID = "*";
 
     public HoppersConfig(String filename) throws IOException {
 
+        character = new LinkedHashMap<>();
+
         try (BufferedReader in = new BufferedReader(new FileReader(filename))){
+
 
             String cords = in.readLine();
 
@@ -34,10 +47,51 @@ public class HoppersConfig implements Configuration{
 
                 for (int c = 0; c < cols; c++) {
 
-                    this.grid[r][c] = lines[c].charAt(0);
+                    //this.grid[r][c] = lines[c].charAt(0);
+
+                    //HashSet<Coordinates> cordSet = new HashSet<>();
+
+                    char currentChar = lines[c].charAt(0);
+                    Coordinates coordinates = new Coordinates(r, c);
+
+
+                    if (character.containsKey(String.valueOf(currentChar))) {
+                        character.get(String.valueOf(currentChar)).add(coordinates);
+
+                    } else {
+
+                        List<Coordinates> coordinatesList = new ArrayList<>();
+                        coordinatesList.add(coordinates);
+                        character.put(String.valueOf(currentChar), coordinatesList);
+                    }
+
+//                    if (lines[c].charAt(0) == 'G') {
+//
+//                        Coordinates coordinates = new Coordinates(r, c);
+//                        character.put(GREEN_FROG, coordinates);
+//
+//                    } else if (lines[c].charAt(0) == 'R') {
+//
+//                        Coordinates coordinates = new Coordinates(r,c);
+//                        character.put(RED_FROG, coordinates);
+//
+//                    } else if (lines[c].charAt(0) == '*') {
+//
+//                        Coordinates coordinates = new Coordinates(r, c);
+//                        character.put(EMPTY, coordinates);
+//
+//                    } else if (lines[c].charAt(0) == '.') {
+//
+//                        Coordinates coordinates = new Coordinates(r, c);
+//                        character.put(INVALID, coordinates);
+//                    }
 
                 }
+
             }
+
+            System.out.println(character);
+
         }
     }
 
@@ -74,21 +128,30 @@ public class HoppersConfig implements Configuration{
     @Override
     public String toString() {
 
-        return null;
+        StringBuilder result = new StringBuilder();
+        for (int row=0; row<getRows(); ++row) {
+            for (int col = 0; col < getCols(); ++col) {
 
-//        for (int row=0; row<getRows(); ++row) {
-//            result.append(row).append(VERT_WALL);
-//            // this loop is for the row of cells and the horizontal connections
-//            for (int col = 0; col < getCols(); ++col) {
-//                // get the cell value to display for this coord
-//                result.append(getCell(new Coordinates(row, col)));
-//                if (col < getCols() - 1) {
-//                    if (isNeighbor(new Coordinates(row, col), new Coordinates(row, col + 1))) {
-//                        result.append(EMPTY);
-//                    } else {
-//                        result.append(VERT_WALL);
-//                    }
-//                }
-//            }
+                Coordinates currentCoordinates = new Coordinates(row, col);
+
+                for (Map.Entry<String, List<Coordinates>> entry : character.entrySet()) {
+
+                    if (entry.getValue().contains(currentCoordinates)) {
+                        result.append(entry.getKey());
+
+                    }
+                }
+
+                if (col < getCols() - 1) {
+                    result.append(" ");
+                }
+            }
+
+            result.append(System.lineSeparator());
+
+        }
+
+
+        return result.toString();
     }
 }

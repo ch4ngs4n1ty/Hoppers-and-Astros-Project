@@ -15,6 +15,9 @@ public class Hoppers {
 
             try {
 
+                System.out.println("File: data/hoppers/" + filename);
+                System.out.println(" ");
+
                 HoppersConfig startConfig = new HoppersConfig(filename);
                 System.out.println(startConfig);
 
