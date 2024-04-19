@@ -19,6 +19,7 @@ public class HoppersConfig implements Configuration{
     private static int cols;
     private char grid[][];
     private LinkedHashMap<String, List<Coordinates>> character;
+    private ArrayList<String> frogs;
 
     String GREEN_FROG = "G";
     String RED_FROG = "R";
@@ -47,50 +48,46 @@ public class HoppersConfig implements Configuration{
 
                 for (int c = 0; c < cols; c++) {
 
-                    //this.grid[r][c] = lines[c].charAt(0);
+                    this.grid[r][c] = lines[c].charAt(0);
+
+                }
+            }
+
 
                     //HashSet<Coordinates> cordSet = new HashSet<>();
 
-                    char currentChar = lines[c].charAt(0);
-                    Coordinates coordinates = new Coordinates(r, c);
-
-
-                    if (character.containsKey(String.valueOf(currentChar))) {
-                        character.get(String.valueOf(currentChar)).add(coordinates);
-
-                    } else {
-
-                        List<Coordinates> coordinatesList = new ArrayList<>();
-                        coordinatesList.add(coordinates);
-                        character.put(String.valueOf(currentChar), coordinatesList);
-                    }
-
-//                    if (lines[c].charAt(0) == 'G') {
+//                    char currentChar = lines[c].charAt(0);
+//                    Coordinates coordinates = new Coordinates(r, c);
 //
-//                        Coordinates coordinates = new Coordinates(r, c);
-//                        character.put(GREEN_FROG, coordinates);
+//                    if (character.containsKey(String.valueOf(currentChar))) {
+//                        character.get(String.valueOf(currentChar)).add(coordinates);
 //
-//                    } else if (lines[c].charAt(0) == 'R') {
+//                    } else {
 //
-//                        Coordinates coordinates = new Coordinates(r,c);
-//                        character.put(RED_FROG, coordinates);
-//
-//                    } else if (lines[c].charAt(0) == '*') {
-//
-//                        Coordinates coordinates = new Coordinates(r, c);
-//                        character.put(EMPTY, coordinates);
-//
-//                    } else if (lines[c].charAt(0) == '.') {
-//
-//                        Coordinates coordinates = new Coordinates(r, c);
-//                        character.put(INVALID, coordinates);
+//                        List<Coordinates> coordinatesList = new ArrayList<>();
+//                        coordinatesList.add(coordinates);
+//                        character.put(String.valueOf(currentChar), coordinatesList);
 //                    }
+//
+//                }
+//
+//            }
+//
+//            this.frogs = new ArrayList<>();
+//
+//            for (Map.Entry<String, List<Coordinates>> entry : character.entrySet()) {
+//
+//                String key = entry.getKey();
+//
+//                if ("G".equals(key) || "R".equals(key)) {
+//
+//                    frogs.add(key);
+//
+//                }
+//
+//            }
 
-                }
-
-            }
-
-            System.out.println(character);
+            //System.out.println(grid);
 
         }
     }
@@ -102,7 +99,20 @@ public class HoppersConfig implements Configuration{
 
     @Override
     public Collection<Configuration> getNeighbors() {
-        return null;
+
+        ArrayList<Configuration> neighbors = new ArrayList<>();
+
+        for (int r = 0; r < rows; r++) {
+
+            for (int c = 0; c <cols; c++) {
+
+                char val = grid[r][c];
+
+            }
+
+        }
+
+        return neighbors;
     }
 
     public int getRows() {
@@ -129,18 +139,22 @@ public class HoppersConfig implements Configuration{
     public String toString() {
 
         StringBuilder result = new StringBuilder();
+
         for (int row=0; row<getRows(); ++row) {
+
             for (int col = 0; col < getCols(); ++col) {
 
-                Coordinates currentCoordinates = new Coordinates(row, col);
+                result.append(grid[row][col]).append("");
 
-                for (Map.Entry<String, List<Coordinates>> entry : character.entrySet()) {
-
-                    if (entry.getValue().contains(currentCoordinates)) {
-                        result.append(entry.getKey());
-
-                    }
-                }
+//                Coordinates currentCoordinates = new Coordinates(row, col);
+//
+//                for (Map.Entry<String, List<Coordinates>> entry : character.entrySet()) {
+//
+//                    if (entry.getValue().contains(currentCoordinates)) {
+//                        result.append(entry.getKey());
+//
+//                    }
+//                }
 
                 if (col < getCols() - 1) {
                     result.append(" ");
@@ -151,7 +165,7 @@ public class HoppersConfig implements Configuration{
 
         }
 
-
         return result.toString();
+
     }
 }
