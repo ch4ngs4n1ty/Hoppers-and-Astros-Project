@@ -20,17 +20,12 @@ public class Hoppers {
                 System.out.println("File: data/hoppers/" + filename);
                 System.out.println(" ");
 
-
                 HoppersConfig startConfig = new HoppersConfig(filename);
                 Solver hoppersPath = new Solver(startConfig);
 
                 Collection<Configuration> path = hoppersPath.solve(startConfig);
 
-                System.out.println(startConfig);
-
-
-
-
+                System.out.println(path);
 
             } catch (IOException e) {
                 System.err.println(e);
