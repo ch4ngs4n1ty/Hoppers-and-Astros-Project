@@ -159,16 +159,6 @@ public class HoppersConfig implements Configuration{
         return neighbors;
     }
 
-
-
-    // Helper method to create a copy of the current grid
-//        char[][] newGrid = new char[rows][cols];
-//        for (int i = 0; i < rows; i++) {
-//            System.arraycopy(grid[i], 0, newGrid[i], 0, cols);
-//        }
-//        return newGrid;
-
-
     public int getRows() {
 
         return this.rows;

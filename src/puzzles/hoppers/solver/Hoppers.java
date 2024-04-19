@@ -5,6 +5,7 @@ import puzzles.common.solver.Solver;
 import puzzles.hoppers.model.HoppersConfig;
 
 import java.io.IOException;
+import java.io.ObjectInputFilter;
 import java.util.Collection;
 
 public class Hoppers {
@@ -23,8 +24,9 @@ public class Hoppers {
                 HoppersConfig startConfig = new HoppersConfig(filename);
                 Solver hoppersPath = new Solver(startConfig);
 
-                Collection<Configuration> path = hoppersPath.solve(startConfig);
+                Collection<Configuration> neighbors = startConfig.getNeighbors();
 
+                Collection<Configuration> path = hoppersPath.solve(startConfig);
                 System.out.println(path);
 
             } catch (IOException e) {
