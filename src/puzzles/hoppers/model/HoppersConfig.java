@@ -15,8 +15,8 @@ import java.util.*;
 
 public class HoppersConfig implements Configuration{
 
-    private static int rows;
-    private static int cols;
+    private int rows;
+    private int cols;
     private char grid[][];
 
     String GREEN_FROG = "G";
@@ -47,43 +47,6 @@ public class HoppersConfig implements Configuration{
 
                 }
             }
-
-
-                    //HashSet<Coordinates> cordSet = new HashSet<>();
-
-//                    char currentChar = lines[c].charAt(0);
-//                    Coordinates coordinates = new Coordinates(r, c);
-//
-//                    if (character.containsKey(String.valueOf(currentChar))) {
-//                        character.get(String.valueOf(currentChar)).add(coordinates);
-//
-//                    } else {
-//
-//                        List<Coordinates> coordinatesList = new ArrayList<>();
-//                        coordinatesList.add(coordinates);
-//                        character.put(String.valueOf(currentChar), coordinatesList);
-//                    }
-//
-//                }
-//
-//            }
-//
-//            this.frogs = new ArrayList<>();
-//
-//            for (Map.Entry<String, List<Coordinates>> entry : character.entrySet()) {
-//
-//                String key = entry.getKey();
-//
-//                if ("G".equals(key) || "R".equals(key)) {
-//
-//                    frogs.add(key);
-//
-//                }
-//
-//            }
-
-            //System.out.println(grid);
-
         }
     }
 
@@ -101,8 +64,6 @@ public class HoppersConfig implements Configuration{
         }
         return true;
     }
-
-
 
     private HoppersConfig(HoppersConfig other) {
 
@@ -130,32 +91,42 @@ public class HoppersConfig implements Configuration{
 
                 if (val == 'G' || val == 'R') {
 
-                    if (r == 0 && c == 0) {
+                    int[][] dirConfigs;
 
-                        if (grid[r+2][c+2] == '.') {
-
-                            if (grid[r+1][c+1] == 'G') {
-
-                                HoppersConfig neighborConfig = new HoppersConfig(this);
-
-                                grid[r][c] = '.';
-                                grid[r+2][c+2] = 'R';
-                                grid[r+1][c+1] = '.';
-
-                                neighbors.add(neighborConfig);
-
-                            }
-
-                        }
-
+                    //These are the possible neighbors
+                    if ((r + c) % 2 == 0) {
+                        //Directions that can be used for even number coordinate, total of 8 moves
+                        dirConfigs = new int[][]{{-2, -2}, {-2, 2}, {2, -2}, {2, 2}, {-4, 0}, {4, 0}, {0, -4}, {0, 4}};
+                    } else {
+                        //Directions that can be used for odd number coordinate, total of 4 moves
+                        dirConfigs = new int[][]{{-2, -2}, {-2, 2}, {2, -2}, {2, 2}};
                     }
 
+                    for (int[] dir : dirConfigs) {
+                        int nr = r + dir[0];
+                        int nc = c + dir[1];
+                        int mr = r + dir[0] / 2;
+                        int mc = c + dir[1] / 2;
+
+                        if (nr >= 0 && nr < rows && nc >= 0 && nc < cols && grid[nr][nc] == '.') {
+
+                            if (mr >= 0 && mr < rows && mc >= 0 && mc < cols && grid[mr][mc] != '*') {
+
+                                if (val == 'G' && grid[mr][mc] == 'G' || val == 'R') {
+
+                                    HoppersConfig neighborConfig = new HoppersConfig(this);
+                                    neighborConfig.grid[r][c] = '.';
+                                    neighborConfig.grid[mr][mc] = '.';
+                                    neighborConfig.grid[nr][nc] = val;
+                                    neighbors.add(neighborConfig);
+
+                                }
+                            }
+                        }
+                    }
                 }
-
             }
-
         }
-
         return neighbors;
     }
 

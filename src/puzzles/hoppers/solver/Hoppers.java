@@ -22,12 +22,23 @@ public class Hoppers {
                 System.out.println(" ");
 
                 HoppersConfig startConfig = new HoppersConfig(filename);
+
+                System.out.println(startConfig);
+
                 Solver hoppersPath = new Solver(startConfig);
 
-                Collection<Configuration> neighbors = startConfig.getNeighbors();
-
                 Collection<Configuration> path = hoppersPath.solve(startConfig);
-                System.out.println(path);
+
+                int i = 0;
+
+                for (Configuration step: path) {
+
+                    System.out.println("Step " + i);
+                    i++;
+                    System.out.println(step);
+                    System.out.println("");
+
+                }
 
             } catch (IOException e) {
                 System.err.println(e);
