@@ -31,14 +31,22 @@ public class Hoppers {
 
                 int i = 0;
 
-                for (Configuration step: path) {
+                if (path == null) {
 
-                    System.out.println("Step " + i);
-                    i++;
-                    System.out.println(step);
-                    System.out.println("");
+                    System.out.println("No solution");
 
+                } else {
+
+                    for (Configuration step: path) {
+
+                        System.out.println("Step " + i);
+                        i++;
+                        System.out.println(step);
+                        System.out.println("");
+
+                    }
                 }
+
 
             } catch (IOException e) {
                 System.err.println(e);
