@@ -19,7 +19,6 @@ public class Hoppers {
             try {
 
                 System.out.println("File: data/hoppers/" + filename);
-                System.out.println(" ");
 
                 HoppersConfig startConfig = new HoppersConfig(filename);
 
@@ -28,6 +27,10 @@ public class Hoppers {
                 Solver hoppersPath = new Solver(startConfig);
 
                 Collection<Configuration> path = hoppersPath.solve(startConfig);
+
+                System.out.println("Total configs: " + hoppersPath.getTotalConfigs());
+                System.out.println("Unique configs: " + hoppersPath.getUniqueConfigs());
+
 
                 int i = 0;
 
@@ -39,7 +42,7 @@ public class Hoppers {
 
                     for (Configuration step: path) {
 
-                        System.out.println("Step " + i);
+                        System.out.println("Step " + i + ":");
                         i++;
                         System.out.println(step);
                         System.out.println("");

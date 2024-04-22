@@ -18,6 +18,10 @@ public class HoppersConfig implements Configuration{
     private int rows;
     private int cols;
     private char grid[][];
+    private final int[][] evenMoves = {{-2, -2}, {-2, 2}, {2, -2}, {2, 2}, {-4, 0}, {4, 0}, {0, -4}, {0, 4}};
+    private final int[][] oddMoves = {{-2, -2}, {-2, 2}, {2, -2}, {2, 2}};
+
+
     public HoppersConfig(String filename) throws IOException {
 
         try (BufferedReader in = new BufferedReader(new FileReader(filename))){
@@ -94,11 +98,13 @@ public class HoppersConfig implements Configuration{
                     if ((r + c) % 2 == 0) {
 
                         //Directions that can be used for even number coordinate, total of 8 moves
-                        dirConfigs = new int[][]{{-2, -2}, {-2, 2}, {2, -2}, {2, 2}, {-4, 0}, {4, 0}, {0, -4}, {0, 4}};
+                        dirConfigs = this.evenMoves;
 
                     } else {
+
                         //Directions that can be used for odd number coordinate, total of 4 moves
-                        dirConfigs = new int[][]{{-2, -2}, {-2, 2}, {2, -2}, {2, 2}};
+                        dirConfigs = this.oddMoves;
+
                     }
 
                     for (int[] dir : dirConfigs) {
@@ -136,6 +142,11 @@ public class HoppersConfig implements Configuration{
         }
         return neighbors;
     }
+
+
+
+
+
 
     public int getRows() {
 
@@ -185,14 +196,17 @@ public class HoppersConfig implements Configuration{
 
             for (int col = 0; col < getCols(); ++col) {
 
-                result.append(grid[row][col]).append("");
+                result.append(grid[row][col]);
 
                 if (col < getCols() - 1) {
                     result.append(" ");
                 }
+
             }
 
-            result.append(System.lineSeparator());
+            if (row < getRows() - 1) {
+                result.append(System.lineSeparator()); // Add line separator only if it's not the last row
+            }
 
         }
 
