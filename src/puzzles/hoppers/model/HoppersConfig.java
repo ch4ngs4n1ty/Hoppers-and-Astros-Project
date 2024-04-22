@@ -96,7 +96,6 @@ public class HoppersConfig implements Configuration{
                         //Directions that can be used for even number coordinate, total of 8 moves
                         dirConfigs = new int[][]{{-2, -2}, {-2, 2}, {2, -2}, {2, 2}, {-4, 0}, {4, 0}, {0, -4}, {0, 4}};
 
-
                     } else {
                         //Directions that can be used for odd number coordinate, total of 4 moves
                         dirConfigs = new int[][]{{-2, -2}, {-2, 2}, {2, -2}, {2, 2}};
