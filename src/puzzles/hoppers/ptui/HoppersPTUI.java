@@ -37,11 +37,21 @@ public class HoppersPTUI implements Observer<HoppersModel, String> {
             String line = in.nextLine();
             String[] words = line.split( "\\s+" );
             if (words.length > 0) {
-                if (words[0].startsWith( "q" )) {
+
+                if (words[0].startsWith("q")) {
+
                     break;
-                }
-                else {
+                } else if (words[0].startsWith("l")) {
+                    String cellR = words[1];
+                    String cellC = words[2];
+                    break;
+                } else if (words[0].startsWith(" s ")) {
+                    break;
+                } else if (words[0].startsWith(" q ")) {
                     displayHelp();
+                    break;
+                } else if (words[0].startsWith(" r ")) {
+                    break;
                 }
             }
         }

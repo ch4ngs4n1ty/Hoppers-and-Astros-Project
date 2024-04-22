@@ -21,7 +21,6 @@ public class HoppersConfig implements Configuration{
     private final int[][] evenMoves = {{-2, -2}, {-2, 2}, {2, -2}, {2, 2}, {-4, 0}, {4, 0}, {0, -4}, {0, 4}};
     private final int[][] oddMoves = {{-2, -2}, {-2, 2}, {2, -2}, {2, 2}};
 
-
     public HoppersConfig(String filename) throws IOException {
 
         try (BufferedReader in = new BufferedReader(new FileReader(filename))){
@@ -61,8 +60,6 @@ public class HoppersConfig implements Configuration{
             }
         }
         return true;
-
-        //Object.equals(this.grid);
     }
 
     private HoppersConfig(HoppersConfig other) {
@@ -96,40 +93,36 @@ public class HoppersConfig implements Configuration{
 
                     //These are the possible neighbors
                     if ((r + c) % 2 == 0) {
-
                         //Directions that can be used for even number coordinate, total of 8 moves
                         dirConfigs = this.evenMoves;
-
                     } else {
-
                         //Directions that can be used for odd number coordinate, total of 4 moves
                         dirConfigs = this.oddMoves;
-
                     }
 
                     for (int[] dir : dirConfigs) {
                         int neighborRow = r + dir[0];
                         int neighborCol = c + dir[1];
-                        int mr = r + dir[0] / 2;
-                        int mc = c + dir[1] / 2;
+                        int hopRow = r + dir[0] / 2;
+                        int hopCol = c + dir[1] / 2;
 
                         if (neighborRow >= 0 && neighborRow < rows && neighborCol >= 0 && neighborCol < cols && grid[neighborRow][neighborCol] == '.') {
 
-                            if (mr >= 0 && mr < rows && mc >= 0 && mc < cols && grid[mr][mc] != '*') {
+                            if (hopRow >= 0 && hopRow < rows && hopCol >= 0 && hopCol < cols && grid[hopRow][hopCol] != '*' && grid[hopRow][hopCol] != 'R') {
 
-                                if (val == 'G' && grid[mr][mc] == 'G') {
+                                if (val == 'G' && grid[hopRow][hopCol] == 'G') {
 
                                     HoppersConfig neighborConfig = new HoppersConfig(this);
                                     neighborConfig.grid[r][c] = '.';
-                                    neighborConfig.grid[mr][mc] = '.';
+                                    neighborConfig.grid[hopRow][hopCol] = '.';
                                     neighborConfig.grid[neighborRow][neighborCol] = val;
                                     neighbors.add(neighborConfig);
 
-                                } else if (val == 'R' && grid[mr][mc] == 'G') {
+                                } else if (val == 'R' && grid[hopRow][hopCol] == 'G') {
 
                                     HoppersConfig neighborConfig = new HoppersConfig(this);
                                     neighborConfig.grid[r][c] = '.';
-                                    neighborConfig.grid[mr][mc] = '.';
+                                    neighborConfig.grid[hopRow][hopCol] = '.';
                                     neighborConfig.grid[neighborRow][neighborCol] = val;
                                     neighbors.add(neighborConfig);
 
@@ -146,8 +139,6 @@ public class HoppersConfig implements Configuration{
 
 
 
-
-
     public int getRows() {
 
         return this.rows;
@@ -160,12 +151,6 @@ public class HoppersConfig implements Configuration{
 
     }
 
-//    public char getVal(int row, int col) {
-//
-//        return grid[row][col];
-//
-//    }
-    
     @Override
     public boolean equals(Object other) {
 
@@ -205,7 +190,7 @@ public class HoppersConfig implements Configuration{
             }
 
             if (row < getRows() - 1) {
-                result.append(System.lineSeparator()); // Add line separator only if it's not the last row
+                result.append(System.lineSeparator());
             }
 
         }
