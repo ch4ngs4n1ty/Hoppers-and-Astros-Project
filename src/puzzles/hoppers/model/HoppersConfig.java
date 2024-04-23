@@ -20,6 +20,10 @@ public class HoppersConfig implements Configuration{
     private char grid[][];
     private final int[][] evenMoves = {{-2, -2}, {-2, 2}, {2, -2}, {2, 2}, {-4, 0}, {4, 0}, {0, -4}, {0, 4}};
     private final int[][] oddMoves = {{-2, -2}, {-2, 2}, {2, -2}, {2, 2}};
+    private char EMPTY = '.';
+    private char INVALID = '*';
+    private char GREEN = 'G';
+    private char RED = 'R';
 
     public HoppersConfig(String filename) throws IOException {
 
@@ -106,9 +110,9 @@ public class HoppersConfig implements Configuration{
                         int hopRow = r + dir[0] / 2;
                         int hopCol = c + dir[1] / 2;
 
-                        if (neighborRow >= 0 && neighborRow < rows && neighborCol >= 0 && neighborCol < cols && grid[neighborRow][neighborCol] == '.') {
+                        if (checkNeighborCords(neighborRow, neighborCol)) {
 
-                            if (hopRow >= 0 && hopRow < rows && hopCol >= 0 && hopCol < cols && grid[hopRow][hopCol] != '*' && grid[hopRow][hopCol] != 'R') {
+                            if (checkHopCords(hopRow, hopCol)) {
 
                                 if (val == 'G' && grid[hopRow][hopCol] == 'G') {
 
@@ -137,6 +141,29 @@ public class HoppersConfig implements Configuration{
     }
 
 
+    public boolean checkNeighborCords(int neighborRow, int neighborCol) {
+
+        if (neighborRow >= 0 && neighborRow < rows) {
+            if (neighborCol >= 0 && neighborCol < cols) {
+                if (grid[neighborRow][neighborCol] == EMPTY) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean checkHopCords(int hopRow, int hopCol) {
+
+        if (hopRow >= 0 && hopRow < rows) {
+            if (hopCol >= 0 && hopCol < cols) {
+                if (grid[hopRow][hopCol] != INVALID && grid[hopRow][hopCol] != RED) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
 
     public int getRows() {

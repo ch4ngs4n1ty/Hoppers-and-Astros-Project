@@ -35,8 +35,36 @@ public class HoppersModel {
 
     public HoppersModel(String filename) throws IOException {
 
+        System.out.println("Loeded: " + filename);
+        currentConfig = new HoppersConfig(filename);
+        System.out.println(currentConfig.getCols());
+
+        System.out.println(toString());
+        System.out.println(currentConfig.toString());
 
 
 
     }
+
+    public String toString() {
+
+        StringBuilder result = new StringBuilder(" ");
+
+
+        for (int col = 0; col <currentConfig.getCols(); col++) {
+
+            result.append(col);
+
+        }
+
+        for (int col = 0; col < currentConfig.getCols(); col++) {
+
+            result.append("\n" + "--");
+
+        }
+
+        return result.toString();
+
+    }
+
 }
