@@ -5,6 +5,7 @@ import puzzles.common.solver.Solver;
 import puzzles.hoppers.model.HoppersConfig;
 
 import java.io.IOException;
+import java.io.ObjectInputFilter;
 import java.util.Collection;
 
 public class Hoppers {
@@ -18,18 +19,36 @@ public class Hoppers {
             try {
 
                 System.out.println("File: data/hoppers/" + filename);
-                System.out.println(" ");
-
 
                 HoppersConfig startConfig = new HoppersConfig(filename);
+
+                System.out.println(startConfig);
+
                 Solver hoppersPath = new Solver(startConfig);
 
                 Collection<Configuration> path = hoppersPath.solve(startConfig);
 
-                System.out.println(startConfig);
+                System.out.println("Total configs: " + hoppersPath.getTotalConfigs());
+                System.out.println("Unique configs: " + hoppersPath.getUniqueConfigs());
 
 
+                int i = 0;
 
+                if (path == null) {
+
+                    System.out.println("No solution");
+
+                } else {
+
+                    for (Configuration step: path) {
+
+                        System.out.println("Step " + i + ":");
+                        i++;
+                        System.out.println(step);
+                        System.out.println("");
+
+                    }
+                }
 
 
             } catch (IOException e) {

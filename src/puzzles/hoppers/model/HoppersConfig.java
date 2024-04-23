@@ -15,23 +15,15 @@ import java.util.*;
 
 public class HoppersConfig implements Configuration{
 
-    private static int rows;
-    private static int cols;
+    private int rows;
+    private int cols;
     private char grid[][];
-    private LinkedHashMap<String, List<Coordinates>> character;
-    private ArrayList<String> frogs;
-
-    String GREEN_FROG = "G";
-    String RED_FROG = "R";
-    String EMPTY = ".";
-    String INVALID = "*";
+    private final int[][] evenMoves = {{-2, -2}, {-2, 2}, {2, -2}, {2, 2}, {-4, 0}, {4, 0}, {0, -4}, {0, 4}};
+    private final int[][] oddMoves = {{-2, -2}, {-2, 2}, {2, -2}, {2, 2}};
 
     public HoppersConfig(String filename) throws IOException {
 
-        character = new LinkedHashMap<>();
-
         try (BufferedReader in = new BufferedReader(new FileReader(filename))){
-
 
             String cords = in.readLine();
 
@@ -52,49 +44,36 @@ public class HoppersConfig implements Configuration{
 
                 }
             }
-
-
-                    //HashSet<Coordinates> cordSet = new HashSet<>();
-
-//                    char currentChar = lines[c].charAt(0);
-//                    Coordinates coordinates = new Coordinates(r, c);
-//
-//                    if (character.containsKey(String.valueOf(currentChar))) {
-//                        character.get(String.valueOf(currentChar)).add(coordinates);
-//
-//                    } else {
-//
-//                        List<Coordinates> coordinatesList = new ArrayList<>();
-//                        coordinatesList.add(coordinates);
-//                        character.put(String.valueOf(currentChar), coordinatesList);
-//                    }
-//
-//                }
-//
-//            }
-//
-//            this.frogs = new ArrayList<>();
-//
-//            for (Map.Entry<String, List<Coordinates>> entry : character.entrySet()) {
-//
-//                String key = entry.getKey();
-//
-//                if ("G".equals(key) || "R".equals(key)) {
-//
-//                    frogs.add(key);
-//
-//                }
-//
-//            }
-
-            //System.out.println(grid);
-
         }
     }
 
     @Override
     public boolean isSolution() {
-        return false;
+
+        for (int r = 0; r < rows; r++) {
+
+            for (int c = 0; c < cols; c++) {
+
+                if (grid[r][c] == 'G') {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    private HoppersConfig(HoppersConfig other) {
+
+        this.rows = other.rows;
+        this.cols = other.cols;
+
+        this.grid = new char[rows][cols];
+
+        for (int r = 0; r < this.rows; r++) {
+
+            System.arraycopy(other.grid[r], 0, this.grid[r], 0, cols);
+
+        }
     }
 
     @Override
@@ -104,16 +83,61 @@ public class HoppersConfig implements Configuration{
 
         for (int r = 0; r < rows; r++) {
 
-            for (int c = 0; c <cols; c++) {
+            for (int c = 0; c < cols; c++) {
 
                 char val = grid[r][c];
 
+                if (val == 'G' || val == 'R') {
+
+                    int[][] dirConfigs;
+
+                    //These are the possible neighbors
+                    if ((r + c) % 2 == 0) {
+                        //Directions that can be used for even number coordinate, total of 8 moves
+                        dirConfigs = this.evenMoves;
+                    } else {
+                        //Directions that can be used for odd number coordinate, total of 4 moves
+                        dirConfigs = this.oddMoves;
+                    }
+
+                    for (int[] dir : dirConfigs) {
+                        int neighborRow = r + dir[0];
+                        int neighborCol = c + dir[1];
+                        int hopRow = r + dir[0] / 2;
+                        int hopCol = c + dir[1] / 2;
+
+                        if (neighborRow >= 0 && neighborRow < rows && neighborCol >= 0 && neighborCol < cols && grid[neighborRow][neighborCol] == '.') {
+
+                            if (hopRow >= 0 && hopRow < rows && hopCol >= 0 && hopCol < cols && grid[hopRow][hopCol] != '*' && grid[hopRow][hopCol] != 'R') {
+
+                                if (val == 'G' && grid[hopRow][hopCol] == 'G') {
+
+                                    HoppersConfig neighborConfig = new HoppersConfig(this);
+                                    neighborConfig.grid[r][c] = '.';
+                                    neighborConfig.grid[hopRow][hopCol] = '.';
+                                    neighborConfig.grid[neighborRow][neighborCol] = val;
+                                    neighbors.add(neighborConfig);
+
+                                } else if (val == 'R' && grid[hopRow][hopCol] == 'G') {
+
+                                    HoppersConfig neighborConfig = new HoppersConfig(this);
+                                    neighborConfig.grid[r][c] = '.';
+                                    neighborConfig.grid[hopRow][hopCol] = '.';
+                                    neighborConfig.grid[neighborRow][neighborCol] = val;
+                                    neighbors.add(neighborConfig);
+
+                                }
+                            }
+                        }
+                    }
+                }
             }
-
         }
-
         return neighbors;
     }
+
+
+
 
     public int getRows() {
 
@@ -126,42 +150,48 @@ public class HoppersConfig implements Configuration{
         return this.cols;
 
     }
-    
+
     @Override
     public boolean equals(Object other) {
-        return false;
+
+        boolean result = false;
+
+        if (other instanceof HoppersConfig) {
+            HoppersConfig otherHoppersConfig = (HoppersConfig) other;
+
+            result = Arrays.deepEquals(this.grid, otherHoppersConfig.grid);
+        }
+
+        return result;
     }
     
     @Override
-    public int hashCode() { return 0; }
+    public int hashCode() {
+
+        return Arrays.deepHashCode(this.grid);
+
+    }
 
     @Override
     public String toString() {
 
         StringBuilder result = new StringBuilder();
 
-        for (int row=0; row<getRows(); ++row) {
+        for (int row=0; row < getRows(); ++row) {
 
             for (int col = 0; col < getCols(); ++col) {
 
-                result.append(grid[row][col]).append("");
-
-//                Coordinates currentCoordinates = new Coordinates(row, col);
-//
-//                for (Map.Entry<String, List<Coordinates>> entry : character.entrySet()) {
-//
-//                    if (entry.getValue().contains(currentCoordinates)) {
-//                        result.append(entry.getKey());
-//
-//                    }
-//                }
+                result.append(grid[row][col]);
 
                 if (col < getCols() - 1) {
                     result.append(" ");
                 }
+
             }
 
-            result.append(System.lineSeparator());
+            if (row < getRows() - 1) {
+                result.append(System.lineSeparator());
+            }
 
         }
 
