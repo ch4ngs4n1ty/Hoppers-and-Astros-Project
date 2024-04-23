@@ -13,6 +13,9 @@ public class HoppersModel {
 
     /** the current configuration */
     private HoppersConfig currentConfig;
+    private static int rows;
+    private static int cols;
+    private char board[][];
 
     /**
      * The view calls this to add itself as an observer.
@@ -35,12 +38,15 @@ public class HoppersModel {
 
     public HoppersModel(String filename) throws IOException {
 
-        System.out.println("Loeded: " + filename);
+        System.out.println("Loaded: " + filename);
         currentConfig = new HoppersConfig(filename);
-        System.out.println(currentConfig.getCols());
+
+        rows = currentConfig.getRows();
+        cols = currentConfig.getCols();
+        board = currentConfig.getGrid();
 
         System.out.println(toString());
-        System.out.println(currentConfig.toString());
+        //System.out.println(currentConfig.toString());
 
 
 
@@ -48,19 +54,38 @@ public class HoppersModel {
 
     public String toString() {
 
-        StringBuilder result = new StringBuilder(" ");
+        StringBuilder result = new StringBuilder("   ");
 
+        for (int col = 0; col < cols; col++) {
 
-        for (int col = 0; col <currentConfig.getCols(); col++) {
-
-            result.append(col);
+            result.append(col + " ");
 
         }
 
-        for (int col = 0; col < currentConfig.getCols(); col++) {
+        result.append("\n");
 
-            result.append("\n" + "--");
+        result.append("  ");
 
+        int numDash = cols * 2;
+
+        for (int col = 0; col < numDash; col++) {
+
+            result.append("-");
+        }
+
+        result.append("\n");
+
+        for (int row = 0; row < rows; row++) {
+
+            result.append(row + "| ");
+
+            for (int col = 0; col < cols; col++) {
+
+                result.append(board[row][col] + " ");
+
+            }
+
+            result.append("\n");
         }
 
         return result.toString();

@@ -91,7 +91,7 @@ public class HoppersConfig implements Configuration{
 
                 char val = grid[r][c];
 
-                if (val == 'G' || val == 'R') {
+                if (val == GREEN || val == RED) {
 
                     int[][] dirConfigs;
 
@@ -114,20 +114,20 @@ public class HoppersConfig implements Configuration{
 
                             if (checkHopCords(hopRow, hopCol)) {
 
-                                if (val == 'G' && grid[hopRow][hopCol] == 'G') {
+                                if (val == GREEN && grid[hopRow][hopCol] == GREEN) {
 
                                     HoppersConfig neighborConfig = new HoppersConfig(this);
-                                    neighborConfig.grid[r][c] = '.';
-                                    neighborConfig.grid[hopRow][hopCol] = '.';
-                                    neighborConfig.grid[neighborRow][neighborCol] = val;
+                                    neighborConfig.grid[r][c] = EMPTY;
+                                    neighborConfig.grid[hopRow][hopCol] = EMPTY;
+                                    neighborConfig.grid[neighborRow][neighborCol] = GREEN;
                                     neighbors.add(neighborConfig);
 
-                                } else if (val == 'R' && grid[hopRow][hopCol] == 'G') {
+                                } else if (val == RED && grid[hopRow][hopCol] == GREEN) {
 
                                     HoppersConfig neighborConfig = new HoppersConfig(this);
-                                    neighborConfig.grid[r][c] = '.';
-                                    neighborConfig.grid[hopRow][hopCol] = '.';
-                                    neighborConfig.grid[neighborRow][neighborCol] = val;
+                                    neighborConfig.grid[r][c] = EMPTY;
+                                    neighborConfig.grid[hopRow][hopCol] = EMPTY;
+                                    neighborConfig.grid[neighborRow][neighborCol] = RED;
                                     neighbors.add(neighborConfig);
 
                                 }
@@ -165,6 +165,9 @@ public class HoppersConfig implements Configuration{
         return false;
     }
 
+    public char[][] getGrid() {
+        return this.grid;
+    }
 
     public int getRows() {
 
