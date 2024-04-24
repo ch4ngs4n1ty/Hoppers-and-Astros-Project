@@ -8,6 +8,8 @@ import java.util.Scanner;
 
 public class AstroPTUI implements Observer<AstroModel, String> {
     private AstroModel model;
+    private String currentFileName;
+
 
     public void init(String filename) throws IOException {
         this.model = new AstroModel(filename);
@@ -22,6 +24,14 @@ public class AstroPTUI implements Observer<AstroModel, String> {
         System.out.println(model);
     }
 
+    /**
+     * Reset the game*/
+
+    public void newGame(String fileName) throws IOException {
+        init(fileName);
+
+    }
+
     private void displayHelp() {
         System.out.println( "h(int)              -- hint next move" );
         System.out.println( "l(oad) filename     -- load new puzzle file" );
@@ -31,22 +41,47 @@ public class AstroPTUI implements Observer<AstroModel, String> {
         System.out.println( "r(eset)             -- reset the current game" );
     }
 
-    public void run() {
+    public void run() throws IOException {
         Scanner in = new Scanner( System.in );
+
         for ( ; ; ) {
             System.out.print( "> " );
             String line = in.nextLine();
             String[] words = line.split( "\\s+" );
+
             if (words.length > 0) {
+                if (words[0].startsWith( "l" )){
+                    currentFileName = words[1];
+                    init(words[1]);
+                }
                 if (words[0].startsWith( "q" )) {
                     break;
+                } else if (words[0].startsWith( "h" )) {
+                    break;
                 }
-                else {
+                 else if (words[0].startsWith( "s" )) {
+                     int row = Integer.parseInt(words[1]);
+                     int col = Integer.parseInt(words[2]);
+
+                     model.select(row, col);
+
+                 } else if (words[0].startsWith( "r" )) {
+                     //init()
+                    System.out.println("Puzzle reset!");
+                    init(currentFileName);
+                } else if (words[0].startsWith( "p" )) {
+                    System.out.println(model.toString());;
+                 } else {
                     displayHelp();
                 }
             }
         }
     }
+
+    public void setFileName(String fileName){
+        this.currentFileName = fileName;
+    }
+
 
     public static void main(String[] args) {
         if (args.length != 1) {
@@ -55,6 +90,9 @@ public class AstroPTUI implements Observer<AstroModel, String> {
             try {
                 AstroPTUI ptui = new AstroPTUI();
                 ptui.init(args[0]);
+
+                ptui.setFileName(args[0]);
+
                 ptui.run();
             } catch (IOException ioe) {
                 System.out.println(ioe.getMessage());
