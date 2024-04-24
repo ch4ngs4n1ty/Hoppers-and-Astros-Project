@@ -29,8 +29,17 @@ public class AstroPTUI implements Observer<AstroModel, String> {
 
     public void newGame(String fileName) throws IOException {
         init(fileName);
-
     }
+
+    public boolean isInteger(String s) {
+        try {
+            Integer.parseInt(s);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
 
     private void displayHelp() {
         System.out.println( "h(int)              -- hint next move" );
@@ -57,21 +66,34 @@ public class AstroPTUI implements Observer<AstroModel, String> {
                 if (words[0].startsWith( "q" )) {
                     break;
                 } else if (words[0].startsWith( "h" )) {
-                    break;
+                    model.hint();
                 }
                  else if (words[0].startsWith( "s" )) {
+                     if (words.length != 3){
+                         displayHelp();
+                     }
                      int row = Integer.parseInt(words[1]);
                      int col = Integer.parseInt(words[2]);
 
                      model.select(row, col);
 
-                 } else if (words[0].startsWith( "r" )) {
-                     //init()
+                 } else if (words[0].startsWith("m")) {
+                     if(words.length != 2){
+                         displayHelp();
+                     }
+                     else{
+                         String dir = words [1];
+                         model.move(dir);
+                     }
+
+                } else if (words[0].startsWith( "r" )) {
                     System.out.println("Puzzle reset!");
                     init(currentFileName);
+
                 } else if (words[0].startsWith( "p" )) {
                     System.out.println(model.toString());;
-                 } else {
+                 }
+                 else {
                     displayHelp();
                 }
             }

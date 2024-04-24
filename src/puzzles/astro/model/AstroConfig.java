@@ -78,7 +78,7 @@ public class AstroConfig implements Configuration{
      * @param explorer the explorer that's moved
      * @param coordinate the explorer's new coordinate
      */
-    private AstroConfig(AstroConfig other, String explorer, Coordinates coordinate){
+    public AstroConfig(AstroConfig other, String explorer, Coordinates coordinate){
         this.explorers = new HashMap<>();
         for(Map.Entry<String, Coordinates> entry : other.explorers.entrySet()){
             this.explorers.put(entry.getKey(), new Coordinates(entry.getValue().row(), entry.getValue().col()));
@@ -94,8 +94,8 @@ public class AstroConfig implements Configuration{
             this.grid[row] = other.grid[row].clone();
         }
 
-        this.grid[newC.row()][newC.col()] = explorer;
         this.grid[oldC.row()][oldC.col()] = ".";
+        this.grid[newC.row()][newC.col()] = explorer;
 
         this.astonautLoc = new Coordinates(this.explorers.get("A").row(), this.explorers.get("A").col());
 
@@ -111,34 +111,6 @@ public class AstroConfig implements Configuration{
         return this.explorers;
     }
 
-    public ArrayList<Integer> getRowIndexes(HashMap<String, Coordinates> rowNeighbors){
-        ArrayList<Integer> rowIndexes = new ArrayList<>();
-        for(Map.Entry<String, Coordinates> neighbors: rowNeighbors.entrySet()){
-            rowIndexes.add(neighbors.getValue().col());
-        }
-        Collections.sort(rowIndexes);
-
-        return rowIndexes;
-    }
-
-    public ArrayList<Integer> getColIndexes(HashMap<String, Coordinates> colNeighbors){
-        ArrayList<Integer> colIndexes = new ArrayList<>();
-
-        for(Map.Entry<String, Coordinates> neighbors: colNeighbors.entrySet()){
-            colIndexes.add(neighbors.getValue().row());
-        }
-        Collections.sort(colIndexes);
-
-        return colIndexes;
-    }
-
-    public String[] getColVals(int cols){
-        String[] colVals = new String[getNumCols()];
-        for(int i = 0; i < grid.length; i ++){
-            colVals[i] = grid[i][cols];
-        }
-        return colVals;
-    }
     public String getVal(int row, int col) {
         return grid[row][col];
     }
@@ -183,7 +155,7 @@ public class AstroConfig implements Configuration{
     }
 
     // Method to find the left neighbor(s) of the current explorer
-    private ArrayList<Coordinates> findLeftNeighbors(Coordinates explorerCoord, HashMap<String, Coordinates> rowNeighbors){
+    public ArrayList<Coordinates> findLeftNeighbors(Coordinates explorerCoord, HashMap<String, Coordinates> rowNeighbors){
         ArrayList<Coordinates> leftNeighbors = new ArrayList<>();
         for (Coordinates neighborCoord : rowNeighbors.values()){
             if(neighborCoord.col() < explorerCoord.col()){
@@ -194,7 +166,7 @@ public class AstroConfig implements Configuration{
     }
 
     // Method to find the right neighbor(s) of the current explorer
-    private ArrayList<Coordinates> findRightNeighbors(Coordinates explorerCoord, HashMap<String, Coordinates> rowNeighbors){
+    public ArrayList<Coordinates> findRightNeighbors(Coordinates explorerCoord, HashMap<String, Coordinates> rowNeighbors){
         ArrayList<Coordinates> rightNeighbors = new ArrayList<>();
         for (Coordinates neighborCoord : rowNeighbors.values()){
             if(neighborCoord.col() > explorerCoord.col()){
@@ -204,7 +176,7 @@ public class AstroConfig implements Configuration{
         return rightNeighbors;
     }
 
-    private  ArrayList<Coordinates> findTopNeighbors(Coordinates explorerCoord, HashMap<String, Coordinates> colNeighbors){
+    public   ArrayList<Coordinates> findTopNeighbors(Coordinates explorerCoord, HashMap<String, Coordinates> colNeighbors){
         ArrayList<Coordinates> topNeighbors = new ArrayList<>();
         for (Coordinates neighborCoord : colNeighbors.values()){
             if(neighborCoord.row() < explorerCoord.row()){
@@ -213,7 +185,7 @@ public class AstroConfig implements Configuration{
         }
         return topNeighbors;
     }
-    private  ArrayList<Coordinates> findBottomNeighbors(Coordinates explorerCoord, HashMap<String, Coordinates> colNeighbors){
+    public   ArrayList<Coordinates> findBottomNeighbors(Coordinates explorerCoord, HashMap<String, Coordinates> colNeighbors){
         ArrayList<Coordinates> bottomNeighbors = new ArrayList<>();
         for (Coordinates neighborCoord : colNeighbors.values()){
             if(neighborCoord.row() > explorerCoord.row()){
