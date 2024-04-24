@@ -18,10 +18,13 @@ public class HoppersModel {
     private static int rows;
     private static int cols;
     private char board[][];
+    private Coordinates selectedCord;
+    private char valStart;
     private int row1;
     private int col1;
     private int row2;
     private int col2;
+    private boolean hasCords1 = false;
 
 
     /**
@@ -53,7 +56,6 @@ public class HoppersModel {
         board = currentConfig.getGrid();
 
         System.out.println(toString());
-        //System.out.println(currentConfig.toString());
 
     }
 
@@ -83,20 +85,47 @@ public class HoppersModel {
         }
     }
 
-    public void select(int row, int col){
-        Coordinates selectedCord = new Coordinates(row, col);
+    public void select(int row, int col) throws IOException {
 
         String msg = "";
-        if (this.board[row][col] == '.'){
-            msg = "No piece at " + selectedCord;
-        }
-        else{
-            msg =  "Selected: " + selectedCord;
+
+        if (!hasCords1) {
+
+            this.selectedCord = new Coordinates(row, col);
+            valStart = this.board[row][col];
+
+            if (valStart == '.' || valStart == '*' || row > rows-1 || col > cols-1) {
+
+                msg = "No piece at " + selectedCord;
+
+            } else {
+
+                msg =  "Selected: " + selectedCord;
+                this.row1 = row;
+                this.col1 = col;
+                hasCords1 = true;
+                //System.out.println(row1 + " " + col1);
+
+            }
+
+        } else {
+
+            Coordinates endCord = new Coordinates(row, col);
+            char valFinish = this.board[row][col];
+
+            msg = "Jumped from " + selectedCord + " to " + endCord;
+
+            this.board[row][col] = valStart;
+            this.board[row1 + row/2][col1 + col/2] = '.';
+            this.board[row1][col1] = valFinish;
+
+            hasCords1 = false;
 
         }
+
+        //System.out.println(currentConfig.getNeighbors());
+
         notifyObservers(msg);
-
-
 
     }
 

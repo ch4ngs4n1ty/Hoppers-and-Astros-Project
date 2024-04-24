@@ -47,7 +47,8 @@ public class HoppersPTUI implements Observer<HoppersModel, String> {
                     init(words[1]);
                     //System.out.println(filename);
 
-                } else if (words[0].startsWith("s")) {
+                } else if (words[0].startsWith("s") && words.length == 3) {
+
                     int row = Integer.parseInt(words[1]);
                     int col = Integer.parseInt(words[2]);
 
@@ -61,7 +62,8 @@ public class HoppersPTUI implements Observer<HoppersModel, String> {
                     init(currentFilename);
 
                 } else {
-                    displayHelp();
+                    init(this.currentFilename);
+                    //displayHelp();
                 }
             }
         }

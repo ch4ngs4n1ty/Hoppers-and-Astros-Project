@@ -105,6 +105,7 @@ public class HoppersConfig implements Configuration{
                     }
 
                     for (int[] dir : dirConfigs) {
+
                         int neighborRow = r + dir[0];
                         int neighborCol = c + dir[1];
                         int hopRow = r + dir[0] / 2;
