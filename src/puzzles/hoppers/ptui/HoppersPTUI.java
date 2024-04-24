@@ -48,10 +48,10 @@ public class HoppersPTUI implements Observer<HoppersModel, String> {
                     //System.out.println(filename);
 
                 } else if (words[0].startsWith("s")) {
-                    String row = words[1];
-                    String col = words[2];
+                    int row = Integer.parseInt(words[1]);
+                    int col = Integer.parseInt(words[2]);
 
-                    break;
+                    this.model.select(row, col);
 
                 } else if (words[0].startsWith("q")) {
                     break;

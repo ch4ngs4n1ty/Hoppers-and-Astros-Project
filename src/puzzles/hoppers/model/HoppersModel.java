@@ -1,13 +1,13 @@
 package puzzles.hoppers.model;
 
+import puzzles.common.Coordinates;
 import puzzles.common.Observer;
 import puzzles.common.solver.Configuration;
 import puzzles.common.solver.Solver;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
+import java.lang.reflect.Array;
+import java.util.*;
 
 public class HoppersModel {
     /** the collection of observers of this model */
@@ -18,6 +18,11 @@ public class HoppersModel {
     private static int rows;
     private static int cols;
     private char board[][];
+    private int row1;
+    private int col1;
+    private int row2;
+    private int col2;
+
 
     /**
      * The view calls this to add itself as an observer.
@@ -47,17 +52,19 @@ public class HoppersModel {
         cols = currentConfig.getCols();
         board = currentConfig.getGrid();
 
-
-
         System.out.println(toString());
         //System.out.println(currentConfig.toString());
 
     }
 
-    public void hint() {
+    public void reset() {
+
+    }
+
+    public void hint() throws IOException {
 
         Solver hoppersPath = new Solver(currentConfig);
-        Collection<Configuration> hintsList = hoppersPath.solve(currentConfig);
+        ArrayList<Configuration> hintsList = new ArrayList<>(hoppersPath.solve(currentConfig));
 
         if (hintsList == null) {
 
@@ -65,16 +72,29 @@ public class HoppersModel {
 
         } else {
 
+            //this.currentConfig = new HoppersConfig(hintsList.get(1).toString());
+            System.out.println(hintsList.get(1).toString());
+            //System.out.println(toString());
 
-
-
-            //currentConfig = hintsList[1];
-
-
-            System.out.println(currentConfig.toString());
+//            System.out.println(hintsList.get(0).toString());
+//            System.out.println("");
+//            System.out.println(hintsList.get(1).toString());
 
         }
+    }
 
+    public void select(int row, int col){
+        Coordinates selectedCord = new Coordinates(row, col);
+
+        String msg = "";
+        if (this.board[row][col] == '.'){
+            msg = "No piece at " + selectedCord;
+        }
+        else{
+            msg =  "Selected: " + selectedCord;
+
+        }
+        notifyObservers(msg);
 
 
 
