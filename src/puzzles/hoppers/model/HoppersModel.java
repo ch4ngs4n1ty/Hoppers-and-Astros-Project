@@ -78,10 +78,6 @@ public class HoppersModel {
             System.out.println(hintsList.get(1).toString());
             //System.out.println(toString());
 
-//            System.out.println(hintsList.get(0).toString());
-//            System.out.println("");
-//            System.out.println(hintsList.get(1).toString());
-
         }
     }
 
@@ -104,7 +100,6 @@ public class HoppersModel {
                 this.row1 = row;
                 this.col1 = col;
                 hasCords1 = true;
-                //System.out.println(row1 + " " + col1);
 
             }
 
@@ -116,14 +111,12 @@ public class HoppersModel {
             msg = "Jumped from " + selectedCord + " to " + endCord;
 
             this.board[row][col] = valStart;
-            this.board[row1 + row/2][col1 + col/2] = '.';
+            this.board[(row1 + row)/2][(col1 + col)/2] = '.';
             this.board[row1][col1] = valFinish;
 
             hasCords1 = false;
 
         }
-
-        //System.out.println(currentConfig.getNeighbors());
 
         notifyObservers(msg);
 
