@@ -1,9 +1,11 @@
 package puzzles.hoppers.model;
 
 import puzzles.common.Observer;
+import puzzles.common.solver.Configuration;
 import puzzles.common.solver.Solver;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -45,12 +47,39 @@ public class HoppersModel {
         cols = currentConfig.getCols();
         board = currentConfig.getGrid();
 
+
+
         System.out.println(toString());
         //System.out.println(currentConfig.toString());
+
+    }
+
+    public void hint() {
+
+        Solver hoppersPath = new Solver(currentConfig);
+        Collection<Configuration> hintsList = hoppersPath.solve(currentConfig);
+
+        if (hintsList == null) {
+
+            System.out.println("No solution");
+
+        } else {
+
+
+
+
+            //currentConfig = hintsList[1];
+
+
+            System.out.println(currentConfig.toString());
+
+        }
+
 
 
 
     }
+
 
     public String toString() {
 

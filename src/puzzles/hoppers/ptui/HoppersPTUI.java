@@ -8,6 +8,7 @@ import java.util.Scanner;
 
 public class HoppersPTUI implements Observer<HoppersModel, String> {
     private HoppersModel model;
+    private String currentFilename;
 
     public void init(String filename) throws IOException {
         this.model = new HoppersModel(filename);
@@ -30,7 +31,7 @@ public class HoppersPTUI implements Observer<HoppersModel, String> {
         System.out.println( "r(eset)             -- reset the current game" );
     }
 
-    public void run() {
+    public void run() throws IOException {
         Scanner in = new Scanner( System.in );
         for ( ; ; ) {
             System.out.print( "> " );
@@ -39,20 +40,36 @@ public class HoppersPTUI implements Observer<HoppersModel, String> {
             if (words.length > 0) {
 
                 if (words[0].startsWith("h")) {
-                    break;
+                    this.model.hint();
+
                 } else if (words[0].startsWith("l")) {
+                    this.currentFilename = words[1];
+                    init(words[1]);
+                    //System.out.println(filename);
+
+                } else if (words[0].startsWith("s")) {
+                    String row = words[1];
+                    String col = words[2];
+
                     break;
-                } else if (words[0].startsWith(" s ")) {
+
+                } else if (words[0].startsWith("q")) {
                     break;
-                } else if (words[0].startsWith(" q ")) {
-                    break;
-                } else if (words[0].startsWith(" r ")) {
-                    break;
+
+                } else if (words[0].startsWith("r")) {
+                    System.out.println("Puzzle reset");
+                    init(currentFilename);
+
                 } else {
                     displayHelp();
                 }
             }
         }
+    }
+
+    public void saveFileName(String filename) {
+        this.currentFilename = filename;
+
     }
 
     public static void main(String[] args) {
@@ -62,6 +79,7 @@ public class HoppersPTUI implements Observer<HoppersModel, String> {
             try {
                 HoppersPTUI ptui = new HoppersPTUI();
                 ptui.init(args[0]);
+                ptui.saveFileName(args[0]);
                 ptui.run();
             } catch (IOException ioe) {
                 System.out.println(ioe.getMessage());
