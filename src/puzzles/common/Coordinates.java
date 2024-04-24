@@ -64,7 +64,7 @@ public record Coordinates(int row, int col )
      */
     @Override
     public String toString() {
-        return "(" + this.row + ',' + this.col + ')';
+        return "(" + this.row + ',' + ' ' + this.col + ')';
     }
 
     /**

@@ -15,9 +15,11 @@ public class HoppersModel {
 
     /** the current configuration */
     private HoppersConfig currentConfig;
+    private String currentFilename;
     private static int rows;
     private static int cols;
     private char board[][];
+    private char copyBoard[][];
     private Coordinates selectedCord;
     private char valStart;
     private int row1;
@@ -49,17 +51,41 @@ public class HoppersModel {
     public HoppersModel(String filename) throws IOException {
 
         System.out.println("Loaded: " + filename);
+
         currentConfig = new HoppersConfig(filename);
+        this.currentFilename = filename;
 
         rows = currentConfig.getRows();
         cols = currentConfig.getCols();
         board = currentConfig.getGrid();
 
+        copyBoard = new char[rows][];
+        for (int i = 0; i < rows; i++) {
+            copyBoard[i] = Arrays.copyOf(board[i], board[i].length);
+        }
+
+
         System.out.println(toString());
 
     }
 
-    public void reset() {
+    public void reset() throws IOException {
+
+        currentConfig = new HoppersConfig(this.currentFilename);
+        rows = currentConfig.getRows();
+        cols = currentConfig.getCols();
+        board = currentConfig.getGrid();
+
+//        board = new char[rows][cols];
+//
+//        for (int i = 0; i < rows; i++) {
+//            board[i] = Arrays.copyOf(currentConfig.getGrid()[i], cols);
+//        }
+
+        hasCords1 = false;
+
+        System.out.println("Puzzle reset!");
+        System.out.println(toString());
 
     }
 
@@ -81,7 +107,7 @@ public class HoppersModel {
         }
     }
 
-    public void select(int row, int col) throws IOException {
+    public void select(int row, int col) {
 
         String msg = "";
 
@@ -92,11 +118,11 @@ public class HoppersModel {
 
             if (valStart == '.' || valStart == '*' || row > rows-1 || col > cols-1) {
 
-                msg = "No piece at " + selectedCord;
+                msg = "No frog at " + selectedCord;
 
             } else {
 
-                msg =  "Selected: " + selectedCord;
+                msg =  "Selected " + selectedCord;
                 this.row1 = row;
                 this.col1 = col;
                 hasCords1 = true;
@@ -108,13 +134,32 @@ public class HoppersModel {
             Coordinates endCord = new Coordinates(row, col);
             char valFinish = this.board[row][col];
 
-            msg = "Jumped from " + selectedCord + " to " + endCord;
+            if (valFinish == '.') {
 
-            this.board[row][col] = valStart;
-            this.board[(row1 + row)/2][(col1 + col)/2] = '.';
-            this.board[row1][col1] = valFinish;
+                int hopRow = (row1 + row) / 2;
+                int hopCol = (col1 + col) / 2;
 
-            hasCords1 = false;
+                if (this.board[hopRow][hopCol] == 'G' || this.board[hopRow][hopCol] == 'R') {
+
+                    this.board[row][col] = valStart;
+                    this.board[hopRow][hopCol] = '.';
+                    this.board[row1][col1] = valFinish;
+
+                    msg = "Jumped from " + selectedCord + "  to " + endCord;
+
+                    hasCords1 = false;
+
+                } else {
+
+                    msg = "Can't jump from " + selectedCord + " to " + endCord;
+
+                }
+
+            } else {
+
+                msg = "Can't jump from " + selectedCord + " to " + endCord;
+
+            }
 
         }
 
@@ -122,14 +167,17 @@ public class HoppersModel {
 
     }
 
-
     public String toString() {
 
         StringBuilder result = new StringBuilder("   ");
 
         for (int col = 0; col < cols; col++) {
 
-            result.append(col + " ");
+            result.append(col);
+
+            if (col < cols - 1) {
+                result.append(" ");
+            }
 
         }
 
@@ -152,7 +200,11 @@ public class HoppersModel {
 
             for (int col = 0; col < cols; col++) {
 
-                result.append(board[row][col] + " ");
+                result.append(board[row][col]);
+
+                if (col < cols - 1) {
+                    result.append(" ");
+                }
 
             }
 

@@ -58,8 +58,9 @@ public class HoppersPTUI implements Observer<HoppersModel, String> {
                     break;
 
                 } else if (words[0].startsWith("r")) {
-                    System.out.println("Puzzle reset");
-                    init(currentFilename);
+
+                    this.model.reset();
+
 
                 } else {
                     init(this.currentFilename);
