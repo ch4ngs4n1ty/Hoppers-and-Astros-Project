@@ -79,28 +79,6 @@ public class AstroConfig implements Configuration{
      * @param coordinate the explorer's new coordinate
      */
     private AstroConfig(AstroConfig other, String explorer, Coordinates coordinate){
-
-//        this.explorers = other.explorers;
-//
-//        Coordinates oldC = explorers.get(explorer);
-//        Coordinates newC = coordinate;
-//        //this.explorers.put(explorer, coordinate);
-//
-//
-//        this.grid = new String[other.getNumRows()][other.getNumCols()];
-//
-//        for(int row = 0; row < grid.length; row++){
-//            this.grid[row] = other.grid[row].clone();
-//        }
-//
-//        this.grid[newC.row()][newC.col()] = explorer;
-//        this.grid[oldC.row()][oldC.col()] = ".";
-//
-//
-//        this.astonautLoc = new Coordinates(coordinate.row(), coordinate.col());
-
-        //this.explorers.put(explorer, coordinate);
-
         this.explorers = new HashMap<>();
         for(Map.Entry<String, Coordinates> entry : other.explorers.entrySet()){
             this.explorers.put(entry.getKey(), new Coordinates(entry.getValue().row(), entry.getValue().col()));
@@ -283,113 +261,12 @@ public class AstroConfig implements Configuration{
                     }
                     neighbors.add(new AstroConfig(this, explorer.getKey(), new Coordinates(explorerCoord.row(), rightMost.col()-1)));
                 }
-                /**
-
-                //creates temporary coordinates for the possible left and right movements
-                Coordinates rightMost = null;
-                Coordinates leftMost = null;
-
-                //traverses the neighbors in the same row
-                for(Map.Entry<String, Coordinates> neighbor: rowNeighbors.entrySet()){
-                    Coordinates currNeighCoord = neighbor.getValue();
-
-                    ArrayList<Integer> rowNeighIndexes = getRowIndexes(rowNeighbors); // gets the indexes of all row neighbors
-
-                    // true if the current explorer is in between two neighbors
-                    if(rowNeighIndexes.getFirst() < explorerCoord.col()
-                            && rowNeighIndexes.getLast() > explorerCoord.col()){
-                        if((explorerCoord.col() - rowNeighIndexes.getFirst() > 1)){
-                            leftMost = new Coordinates(explorerCoord.row(), rowNeighIndexes.getFirst() + 1);
-                        }
-
-                        if(rowNeighIndexes.getLast()- explorerCoord.col() > 1){
-                            rightMost = new Coordinates(explorerCoord.row(), rowNeighIndexes.getLast() - 1 );
-                        }
-                    }
-
-                    //true if current explorer has only 1 neighbor
-                    else{
-                        if((explorerCoord.col() - rowNeighIndexes.getLast() > 1)){
-                            leftMost = new Coordinates(explorerCoord.row(), rowNeighIndexes.getLast() + 1);
-                        }
-
-                        if(rowNeighIndexes.getFirst()- explorerCoord.col() > 1){
-                            rightMost = new Coordinates(explorerCoord.row(), rowNeighIndexes.getFirst() - 1 );
-                        }
-                    }
-                }
-                // adds possible configurations to list of configs
-                if(leftMost != null){
-                    neighbors.add(new AstroConfig(this, explorer.getKey(), leftMost));
-                    //break;
-                }
-
-                if(rightMost != null) {
-                    neighbors.add(new AstroConfig(this, explorer.getKey(), rightMost));
-                }
             }
-*
-            // VERTICAL MOVEMENTS
 
-            HashMap<String, Coordinates> colNeighbors = getColNeighbors(explorer.getKey(), explorerCoord.col());
-
-            // moves current explorer if possible
-            if(!(colNeighbors.isEmpty())) {
-
-                //creates temporary coordinates for the possible left and right movements
-                Coordinates topMost = null;
-                Coordinates bottomMost = null;
-
-                //traverses the neighbors in the same column
-                for (Map.Entry<String, Coordinates> neighbor : colNeighbors.entrySet()) {
-                    Coordinates currNeighCoord = neighbor.getValue();
-
-                    ArrayList<Integer> colNeighIndexes = getColIndexes(colNeighbors); // gets the indexes of all column neighbors
-
-                    // true if the current explorer is in between two neighbors
-                    if (colNeighIndexes.getFirst() < explorerCoord.row()
-                            && colNeighIndexes.getLast() > explorerCoord.row()) {
-
-                        if ((explorerCoord.row() - colNeighIndexes.getFirst() > 1)) {
-                            //topMost = new Coordinates(explorerCoord.row(), colNeighIndexes.getFirst() + 1);
-                            topMost = new Coordinates(colNeighIndexes.getFirst() + 1, explorerCoord.col());
-                        }
-
-                        if (colNeighIndexes.getLast() - explorerCoord.row() > 1) {
-                            //bottomMost = new Coordinates(explorerCoord.row(), colNeighIndexes.getLast() - 1 );
-                            bottomMost = new Coordinates(colNeighIndexes.getLast() - 1, explorerCoord.col());
-                        }
-                    } else { // true if current explorer has only 1 vertical neighbor
-                        if (explorerCoord.row() - colNeighIndexes.getFirst() > 1) { //
-                            //if((colNeighIndexes.getLast() - explorerCoord.row() > 1)){
-                            topMost = new Coordinates(colNeighIndexes.getFirst() + 1, explorerCoord.col());//explorerCoord.row(), colNeighIndexes.getLast() + 1);
-                            break;
-                        }
-                        if ((colNeighIndexes.getFirst() - explorerCoord.row() > 1)) {
-                            bottomMost = new Coordinates(colNeighIndexes.getFirst() - 1, explorerCoord.col());
-                        } else if ((colNeighIndexes.getLast() - explorerCoord.row() > 1) && colNeighIndexes.size() == 1) {
-                            //if(explorerCoord.row()- colNeighIndexes.getLast() > 1){
-                            bottomMost = new Coordinates(colNeighIndexes.getLast() - 1, explorerCoord.col());
-                        }
-//                        else{
-//                            bottomMost = new Coordinates(colNeighIndexes.getFirst()-1, explorerCoord.col());
-//                        }
-                    }
-                }
-                if (topMost != null) {
-                    neighbors.add(new AstroConfig(this, explorer.getKey(), topMost));
-                    //break;
-                }
-
-                if (bottomMost != null) {
-                    neighbors.add(new AstroConfig(this, explorer.getKey(), bottomMost));
-                }
-            }
-            }
-        }*/
-            }
+            //VERTICAL MOVEMENTS
             HashMap<String, Coordinates> colNeighbors = getColNeighbors(explorer.getKey(), explorerCoord.col());
             if(!colNeighbors.isEmpty()){
+
                 ArrayList<Coordinates> topNeighbors = findTopNeighbors(explorerCoord, colNeighbors);
                 ArrayList<Coordinates> bottomNeighbors = findBottomNeighbors(explorerCoord, colNeighbors);
 
@@ -411,19 +288,10 @@ public class AstroConfig implements Configuration{
                     }
                     neighbors.add(new AstroConfig(this, explorer.getKey(), new Coordinates(bottomMost.row() - 1, explorerCoord.col())));
                 }
-
             }
-
-
         }
-
-
         return neighbors;
     }
-
-//    public Coordinates getAstonautLoc(AstroConfig astroConfig){
-//        return this.astonautLoc;
-//    }
 
     @Override
     public boolean equals(Object other) {
@@ -455,5 +323,9 @@ public class AstroConfig implements Configuration{
 
         return result.toString();
         //return null;
+    }
+
+    public String[][] getGrid() {
+        return this.grid;
     }
 }

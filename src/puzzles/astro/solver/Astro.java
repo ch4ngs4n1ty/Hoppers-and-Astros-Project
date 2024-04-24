@@ -18,26 +18,13 @@ public class Astro {
 
                 AstroConfig startConfig = new AstroConfig(filename);
 
-
-                System.out.println("File: " + Arrays.toString(args));
+                System.out.println("File: data/astro/" + filename);
                 System.out.print(startConfig);
 
-                //System.out.println(startConfig.getExplorers(startConfig));
 
                 //solves the puzzle
                 Solver solveAstroPuzzle = new Solver(startConfig);
                 Collection<Configuration> resultingPath = solveAstroPuzzle.solve(startConfig);
-
-
-//                Collection<Configuration> neighbors = startConfig.getNeighbors();
-//                for(Configuration config: neighbors){
-//                    System.out.println(config);
-//
-//
-//                    AstroConfig currentconfig = (AstroConfig) config;
-//                    System.out.println(currentconfig.getAstonautLoc(currentconfig));
-//                    System.out.println(currentconfig.getExplorers(currentconfig));
-//                }
 
                 System.out.println("Total configs: "+ solveAstroPuzzle.getTotalConfigs() + "\nUnique configs: "
                         + solveAstroPuzzle.getUniqueConfigs());
