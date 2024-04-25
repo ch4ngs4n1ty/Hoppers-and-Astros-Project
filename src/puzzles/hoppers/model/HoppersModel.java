@@ -109,7 +109,6 @@ public class HoppersModel {
         }
     }
 
-
     public void select(int row, int col) {
 
         String msg = "";
@@ -171,6 +170,10 @@ public class HoppersModel {
 
         notifyObservers(msg);
 
+    }
+
+    public char getValue(int row, int col) {
+        return this.board[row][col];
     }
 
     public String toString() {
