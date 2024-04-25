@@ -1,5 +1,6 @@
 package puzzles.hoppers.model;
 
+import puzzles.astro.model.AstroConfig;
 import puzzles.common.Coordinates;
 import puzzles.common.Observer;
 import puzzles.common.solver.Configuration;
@@ -50,7 +51,13 @@ public class HoppersModel {
 
     public HoppersModel(String filename) throws IOException {
 
-        System.out.println("Loaded: " + filename);
+        //Loads the current file name
+        load(filename);
+
+    }
+
+
+    public void load(String filename) throws IOException {
 
         currentConfig = new HoppersConfig(filename);
         this.currentFilename = filename;
@@ -59,53 +66,49 @@ public class HoppersModel {
         cols = currentConfig.getCols();
         board = currentConfig.getGrid();
 
-        copyBoard = new char[rows][];
-        for (int i = 0; i < rows; i++) {
-            copyBoard[i] = Arrays.copyOf(board[i], board[i].length);
-        }
+        //notifyObservers("Loaded: ");
 
-
+        System.out.println("Loaded: " + currentFilename);
         System.out.println(toString());
+
 
     }
 
+    /**
+     * Resets an entire board to the start of the current board
+     * @throws IOException
+     */
     public void reset() throws IOException {
 
         currentConfig = new HoppersConfig(this.currentFilename);
+
+        load(currentFilename);
+
         rows = currentConfig.getRows();
         cols = currentConfig.getCols();
         board = currentConfig.getGrid();
 
-//        board = new char[rows][cols];
-//
-//        for (int i = 0; i < rows; i++) {
-//            board[i] = Arrays.copyOf(currentConfig.getGrid()[i], cols);
-//        }
-
         hasCords1 = false;
 
         System.out.println("Puzzle reset!");
-        System.out.println(toString());
 
     }
 
-    public void hint() throws IOException {
+    public void hint(){
+        Solver solveHopperPuzzle = new Solver(currentConfig);
+        LinkedList<Configuration> resultingPath = (LinkedList<Configuration>) solveHopperPuzzle.solve(currentConfig);
+        if(resultingPath == null){
+            notifyObservers("No solution");
+        }
+        else{
 
-        Solver hoppersPath = new Solver(currentConfig);
-        ArrayList<Configuration> hintsList = new ArrayList<>(hoppersPath.solve(currentConfig));
-
-        if (hintsList == null) {
-
-            System.out.println("No solution");
-
-        } else {
-
-            //this.currentConfig = new HoppersConfig(hintsList.get(1).toString());
-            System.out.println(hintsList.get(1).toString());
-            //System.out.println(toString());
+            this.currentConfig = (HoppersConfig) resultingPath.get(1);
+            this.board = currentConfig.getGrid();
+            notifyObservers("Next step!");
 
         }
     }
+
 
     public void select(int row, int col) {
 
@@ -116,6 +119,7 @@ public class HoppersModel {
             this.selectedCord = new Coordinates(row, col);
             valStart = this.board[row][col];
 
+            //If the starting value is nto a frog, then it returns no frog at the specific cord message
             if (valStart == '.' || valStart == '*' || row > rows-1 || col > cols-1) {
 
                 msg = "No frog at " + selectedCord;
@@ -136,10 +140,12 @@ public class HoppersModel {
 
             if (valFinish == '.') {
 
+                //Gets the value that a selected frog will hop over
                 int hopRow = (row1 + row) / 2;
                 int hopCol = (col1 + col) / 2;
 
-                if (this.board[hopRow][hopCol] == 'G' || this.board[hopRow][hopCol] == 'R') {
+                //The value that a selected frog hops over must be a green frog
+                if (this.board[hopRow][hopCol] == 'G') {
 
                     this.board[row][col] = valStart;
                     this.board[hopRow][hopCol] = '.';

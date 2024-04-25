@@ -43,9 +43,10 @@ public class HoppersPTUI implements Observer<HoppersModel, String> {
                     this.model.hint();
 
                 } else if (words[0].startsWith("l")) {
+
                     this.currentFilename = words[1];
-                    init(words[1]);
-                    //System.out.println(filename);
+                    this.model.load(currentFilename);
+
 
                 } else if (words[0].startsWith("s") && words.length == 3) {
 
