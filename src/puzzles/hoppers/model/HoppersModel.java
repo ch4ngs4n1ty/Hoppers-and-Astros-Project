@@ -97,10 +97,9 @@ public class HoppersModel {
     public void hint(){
         Solver solveHopperPuzzle = new Solver(currentConfig);
         LinkedList<Configuration> resultingPath = (LinkedList<Configuration>) solveHopperPuzzle.solve(currentConfig);
-        if(resultingPath == null){
+        if (resultingPath == null){
             notifyObservers("No solution");
-        }
-        else{
+        } else {
 
             this.currentConfig = (HoppersConfig) resultingPath.get(1);
             this.board = currentConfig.getGrid();
