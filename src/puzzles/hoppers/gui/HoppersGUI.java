@@ -5,9 +5,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.GridPane;
+import javafx.scene.layout.*;
 import puzzles.common.Coordinates;
 import puzzles.common.Observer;
 import puzzles.hoppers.model.HoppersConfig;
@@ -20,7 +18,6 @@ import java.io.IOException;
 
 public class HoppersGUI extends Application implements Observer<HoppersModel, String> {
 
-
     private HoppersModel model;
     private HoppersConfig currentConfig;
     private String currentFilename;
@@ -28,6 +25,19 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
     private int row;
     private int col;
     private Label text;
+    private GridPane gameBoard;
+
+    private Button gridButtons[][];
+    private static final char GREEN = 'G';
+    private static final char RED = 'R';
+    private static final char LILYPAD = '.';
+    private static final char WATER = '*';
+
+    private Button redButton;
+    private Button greenButton;
+    private Button lilypadButton;
+    private Button waterButton;
+
     private Coordinates cords;
     /** The resources directory is located directly underneath the gui package */
     private final static String RESOURCES_DIR = "resources/";
@@ -35,7 +45,6 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
     // for demonstration purposes
     private Image redFrog = new Image(getClass().getResourceAsStream(RESOURCES_DIR+"red_frog.png"));
     private Image greenFrog = new Image(getClass().getResourceAsStream(RESOURCES_DIR+"green_frog.png"));
-
     private Image lilyPad = new Image(getClass().getResourceAsStream(RESOURCES_DIR+"lily_pad.png"));
     private Image water = new Image(getClass().getResourceAsStream(RESOURCES_DIR+"water.png"));
 
@@ -60,9 +69,11 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
         row = currentConfig.getRows();
         col = currentConfig.getCols();
         board = currentConfig.getGrid();
+        gridButtons = new Button[row][col];
 
         stage.setTitle("Hoppers GUI");
         BorderPane wholeBoard = new BorderPane();
+
         stage.sizeToScene();
 
         FlowPane currentLabel = new FlowPane();
@@ -76,45 +87,48 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
         wholeBoard.setTop(currentLabel);
 
         //Gridpane full of buttons that will be set in the center
-        GridPane gameBoard = new GridPane();
+        gameBoard = new GridPane();
 
         for (int r = 0; r < row; r++) {
 
             for (int c = 0; c < col; c++) {
 
+                char val = model.getValue(r, c);
+
                 Button button = new Button();
-                char val = this.model.getValue(c,r);
+                button.setMaxSize(ICON_SIZE, ICON_SIZE);
+                buttonGraphics(button, val);
+                gridButtons[r][c] = button;
 
-                if (val == 'R') {
+//
+//                if (val == RED) {
+//
+//                    button.setGraphic(new ImageView(redFrog));
+//
+//                } else if (val == GREEN) {
+//
+//                    button.setGraphic(new ImageView(greenFrog));
+//
+//                } else if (val == LILYPAD) {
+//
+//                    button.setGraphic(new ImageView(lilyPad));
+//
+//                } else if (val == WATER) {
+//
+//                    button.setGraphic(new ImageView(water));
+//
+//                }
 
-                    button.setGraphic(new ImageView(redFrog));
-                    button.setMaxSize(ICON_SIZE, ICON_SIZE);
+                //button.setStyle("-fx-background-color: transparent; -fx-padding: 0; -fx-border-width: 0;");
 
-                } else if (val == 'G') {
+                gameBoard.add(button, c, r);
 
-                    button.setGraphic(new ImageView(greenFrog));
-                    button.setMaxSize(ICON_SIZE, ICON_SIZE);
+                final int rowFinal = r;
+                final int colFinal = c;
 
-                } else if (val == '.') {
-
-                    button.setGraphic(new ImageView(lilyPad));
-                    button.setMaxSize(ICON_SIZE, ICON_SIZE);
-
-                } else if (val == '*') {
-
-                    button.setGraphic(new ImageView(water));
-                    button.setMaxSize(ICON_SIZE, ICON_SIZE);
-
-                }
-
-                button.setStyle("-fx-background-color: transparent; -fx-padding: 0; -fx-border-width: 0;");
-
-                int rowSelect = r;
-                int colSelect = c;
-
-                cords = new Coordinates(r , c);
-                button.setOnAction(e -> model.select(rowSelect, colSelect));
-                gameBoard.add(button, r, c);
+                button.setOnAction(event -> {
+                    model.select(rowFinal, colFinal);
+                });
 
             }
         }
@@ -125,8 +139,14 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
         FlowPane buttonRow = new FlowPane();
 
         Button loadButton = new Button("Load");
+        loadButton.setStyle("-fx-font-weight: bold;");
+
         Button resetButton = new Button("Reset");
+        resetButton.setStyle("-fx-font-weight: bold;");
+
         Button hintButton = new Button("Hint");
+        hintButton.setStyle("-fx-font-weight: bold;");
+
 
         buttonRow.getChildren().addAll(loadButton, resetButton, hintButton);
         buttonRow.setAlignment(Pos.CENTER);
@@ -143,14 +163,35 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
     public void update(HoppersModel hoppersModel, String msg) {
 
         if (text != null) {
+            text.setText(msg);
+            updateGameBoard();
 
-            text.setText("selected " + cords);
         }
 
     }
 
-    //@Override
+    private void updateGameBoard() {
+        for (int r = 0; r < row; r++) {
+            for (int c = 0; c < col; c++) {
+                buttonGraphics(gridButtons[r][c], model.getValue(r, c));
+            }
+        }
+    }
 
+    private void buttonGraphics(Button button, char val) {
+
+        if (val == RED) {
+            button.setGraphic(new ImageView(redFrog));
+        } else if (val == GREEN) {
+            button.setGraphic(new ImageView(greenFrog));
+        } else if (val == LILYPAD) {
+            button.setGraphic(new ImageView(lilyPad));
+        } else if (val == WATER) {
+            button.setGraphic(new ImageView(water));
+        }
+
+        button.setStyle("-fx-background-color: transparent; -fx-padding: 0; -fx-border-width: 0;");
+    }
 
     public static void main(String[] args) {
         if (args.length != 1) {
