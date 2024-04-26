@@ -171,6 +171,9 @@ public class HoppersModel {
 
     }
 
+
+
+
     public char getValue(int row, int col) {
         return this.board[row][col];
     }

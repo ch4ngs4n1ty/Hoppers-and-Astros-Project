@@ -26,19 +26,12 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
     private int col;
     private Label text;
     private GridPane gameBoard;
-
     private Button gridButtons[][];
     private static final char GREEN = 'G';
     private static final char RED = 'R';
     private static final char LILYPAD = '.';
     private static final char WATER = '*';
 
-    private Button redButton;
-    private Button greenButton;
-    private Button lilypadButton;
-    private Button waterButton;
-
-    private Coordinates cords;
     /** The resources directory is located directly underneath the gui package */
     private final static String RESOURCES_DIR = "resources/";
 
@@ -57,7 +50,6 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
         currentFilename = filename;
         this.model = new HoppersModel(filename);
         this.model.addObserver(this);
-        //this.model.load(filename);
 
     }
 
@@ -100,27 +92,6 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
                 buttonGraphics(button, val);
                 gridButtons[r][c] = button;
 
-//
-//                if (val == RED) {
-//
-//                    button.setGraphic(new ImageView(redFrog));
-//
-//                } else if (val == GREEN) {
-//
-//                    button.setGraphic(new ImageView(greenFrog));
-//
-//                } else if (val == LILYPAD) {
-//
-//                    button.setGraphic(new ImageView(lilyPad));
-//
-//                } else if (val == WATER) {
-//
-//                    button.setGraphic(new ImageView(water));
-//
-//                }
-
-                //button.setStyle("-fx-background-color: transparent; -fx-padding: 0; -fx-border-width: 0;");
-
                 gameBoard.add(button, c, r);
 
                 final int rowFinal = r;
@@ -147,8 +118,28 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
         Button hintButton = new Button("Hint");
         hintButton.setStyle("-fx-font-weight: bold;");
 
-
         buttonRow.getChildren().addAll(loadButton, resetButton, hintButton);
+
+
+        resetButton.setOnAction(event -> {
+            try {
+                model.reset();
+                updateGameBoard();
+
+            } catch (IOException e) {
+                e.printStackTrace();  
+            }
+
+        });
+
+        hintButton.setOnAction(event -> {
+
+            model.hint();
+            updateGameBoard();
+
+        });
+
+
         buttonRow.setAlignment(Pos.CENTER);
         wholeBoard.setBottom(buttonRow);
 
@@ -171,11 +162,17 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
     }
 
     private void updateGameBoard() {
+
         for (int r = 0; r < row; r++) {
             for (int c = 0; c < col; c++) {
-                buttonGraphics(gridButtons[r][c], model.getValue(r, c));
+
+                Button button = gridButtons[r][c];
+                char val = model.getValue(r, c);
+
+                buttonGraphics(button, val);
             }
         }
+
     }
 
     private void buttonGraphics(Button button, char val) {

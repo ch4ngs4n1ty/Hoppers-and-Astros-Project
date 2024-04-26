@@ -65,7 +65,6 @@ public class HoppersPTUI implements Observer<HoppersModel, String> {
 
                 } else {
                     init(this.currentFilename);
-                    //displayHelp();
                 }
             }
         }
