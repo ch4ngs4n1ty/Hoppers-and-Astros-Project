@@ -4,6 +4,7 @@ import puzzles.common.Coordinates;
 import puzzles.common.Observer;
 import puzzles.common.solver.Configuration;
 import puzzles.common.solver.Solver;
+import puzzles.hoppers.model.HoppersConfig;
 
 import java.io.IOException;
 import java.util.*;
@@ -14,6 +15,7 @@ public class AstroModel {
 
     /** the current configuration */
     private AstroConfig currentConfig;
+    private String currentFilename;
     private static int rows;
     private static int cols;
     private String board[][];
@@ -41,14 +43,27 @@ public class AstroModel {
 
 
     public AstroModel(String filename) throws IOException {
+        load(filename);
+    }
+
+    public void load(String filename) throws IOException {
+
         currentConfig = new AstroConfig(filename);
-        System.out.println("Loaded: " + filename);
+        this.currentFilename = filename;
 
         rows = currentConfig.getNumRows();
         cols = currentConfig.getNumCols();
         board = currentConfig.getGrid();
 
+        //notifyObservers("Loaded: ");
+
+        System.out.println("Loaded: " + currentFilename);
         System.out.println(toString());
+
+    }
+
+    public String getVal(int row, int col){
+        return board[row][col];
     }
 
     public void select(int row, int col){
@@ -65,6 +80,26 @@ public class AstroModel {
             selectedCoordinate = selectedCoord;
         }
         notifyObservers(msg);
+    }
+
+
+
+    /**
+     * Resets an entire board to the start of the current board
+     * @throws IOException
+     */
+    public void reset() throws IOException {
+
+        currentConfig = new AstroConfig(this.currentFilename);
+
+        load(currentFilename);
+
+        rows = currentConfig.getNumRows();
+        cols = currentConfig.getNumCols();
+        board = currentConfig.getGrid();
+
+        System.out.println("Puzzle reset!");
+
     }
 
     public void move(String m) {
@@ -100,11 +135,11 @@ public class AstroModel {
                 } else {
                     direction = "SOUTH";
                 }
-                notifyObservers("Can't move piece at " + selectedCoordinate + " " + direction);
+                notifyObservers("Cant move piece at " + selectedCoordinate + " " + direction);
             }        } else {
             currentConfig = new AstroConfig(this.currentConfig, explorer, newC);
             board = currentConfig.getGrid();
-            notifyObservers("Moved from " + selectedCoordinate + " to " + newC);
+            notifyObservers("Moved from " + selectedCoordinate + "  to " + newC);
         }
         selectedCoordinate = null;
     }
