@@ -57,7 +57,7 @@ public class AstroModel {
         String msg = "";
 
         String pos = this.board[row][col];
-        if(pos.equals(".") || pos.equals("*") || row > rows-1 || col > cols-1){
+        if (pos.equals(".") || pos.equals("*") || row > rows-1 || col > cols-1){
             msg = "No piece at " + selectedCoord;
         }
         else{
