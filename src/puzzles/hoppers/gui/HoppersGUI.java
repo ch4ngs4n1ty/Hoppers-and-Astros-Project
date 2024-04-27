@@ -29,6 +29,7 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
     private Label text;
     private GridPane gameBoard;
     private Button gridButtons[][];
+    private Stage stage;
     private static final char GREEN = 'G';
     private static final char RED = 'R';
     private static final char LILYPAD = '.';
@@ -122,7 +123,6 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
 
         buttonRow.getChildren().addAll(loadButton, resetButton, hintButton);
 
-
         loadButton.setOnAction(e -> {
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Open Resource File");
@@ -139,9 +139,10 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
 
                 try {
 
-                    model.load(selectedFile.getPath());
-                    currentFilename = selectedFile.getPath();
-                    //updateGameBoard();
+                    String path = selectedFile.getPath();
+                    model.load(path);
+                    currentFilename = path;
+                    loadBoard();
 
                 } catch (IOException ex) {
 
@@ -150,14 +151,11 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
                 }
 ;            }
 
-            updateGameBoard();
-
         });
-
-
 
         resetButton.setOnAction(e -> {
             try {
+
                 model.reset();
                 updateGameBoard();
 
@@ -191,11 +189,30 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
         if (text != null) {
             text.setText(msg);
             updateGameBoard();
+            stage.sizeToScene();
 
         }
 
     }
 
+    private void loadBoard() {
+
+        gameBoard.getChildren().clear();
+
+        for (int r = 0; r < row; r++) {
+            for (int c = 0; c < col; c++) {
+
+                Button button = new Button();
+                char val = model.getValue(r, c);
+
+                buttonGraphics(button, val);
+                gridButtons[r][c] = button;
+                gameBoard.add(button, c, r);
+
+                button.setMaxSize(ICON_SIZE, ICON_SIZE);
+            }
+        }
+    }
     private void updateGameBoard() {
 
         for (int r = 0; r < row; r++) {

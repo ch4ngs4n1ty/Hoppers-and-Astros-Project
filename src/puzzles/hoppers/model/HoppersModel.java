@@ -56,7 +56,6 @@ public class HoppersModel {
 
     }
 
-
     public void load(String filename) throws IOException {
 
         currentConfig = new HoppersConfig(filename);
@@ -70,7 +69,6 @@ public class HoppersModel {
 
         System.out.println("Loaded: " + currentFilename);
         System.out.println(toString());
-
 
     }
 
@@ -118,7 +116,7 @@ public class HoppersModel {
             valStart = this.board[row][col];
 
             //If the starting value is nto a frog, then it returns no frog at the specific cord message
-            if (valStart == '.' || valStart == '*' || row > rows-1 || col > cols-1) {
+            if (valStart == '.' || valStart == '*' || row >= rows || col >= cols) {
 
                 msg = "No frog at " + selectedCord;
 
@@ -142,8 +140,10 @@ public class HoppersModel {
                 int hopRow = (row1 + row) / 2;
                 int hopCol = (col1 + col) / 2;
 
+                char hopVal = this.board[hopRow][hopCol];
+
                 //The value that a selected frog hops over must be a green frog
-                if (this.board[hopRow][hopCol] == 'G') {
+                if (hopVal == 'G' && diagonalCheck(row1, col1, row, col)) {
 
                     this.board[row][col] = valStart;
                     this.board[hopRow][hopCol] = '.';
@@ -171,6 +171,38 @@ public class HoppersModel {
 
     }
 
+    private boolean diagonalCheck(int row1, int col1, int row2, int col2) {
+
+        int rowCheck = row2 - row1;
+        int colCheck = col2 - col1;
+
+        if (rowCheck == -2 && colCheck == 2) {
+
+            return true;
+
+        } else if (rowCheck == 2 && colCheck == -2) {
+
+            return true;
+
+        } else if (rowCheck == 2 && colCheck == 2) {
+
+            return true;
+
+        } else if (rowCheck == -2 && colCheck == -2) {
+
+            return true;
+
+        }
+
+        return false;
+    }
+
+    private boolean isDistanceValid(int row1, int col1, int row2, int col2) {
+        // Check if the move is exactly two cells diagonally
+        int rowDiff = Math.abs(row1 - row2);
+        int colDiff = Math.abs(col1 - col2);
+        return rowDiff == 2 && colDiff == 2;
+    }
 
 
 
