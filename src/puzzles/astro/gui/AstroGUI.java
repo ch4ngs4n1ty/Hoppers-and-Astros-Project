@@ -26,6 +26,7 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
     private Coordinates coord;
     private int rows;
     private int cols;
+    private Button gridButtons[][];
 
     private final static String RESOURCES_DIR = "resources/";
 
@@ -56,7 +57,7 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
         AstroConfig currentConfig = new AstroConfig(this.fileName);
         this.rows = currentConfig.getNumRows();
         this.cols = currentConfig.getNumCols();
-
+        gridButtons = new Button[rows][cols];
 
         BorderPane wholeBoard = new BorderPane();
 
@@ -80,6 +81,19 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
         Button loadButton = new Button("Load");
         Button resetButton = new Button("Reset");
         Button hintButton = new Button("Hint");
+
+        hintButton.setOnAction(event -> {
+            model.hint();
+        });
+
+        resetButton.setOnAction(event -> {
+            try {
+                model.reset();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+
 
         buttonRow.getChildren().addAll(loadButton, resetButton, hintButton);
         buttonRow.setAlignment(Pos.CENTER);
@@ -171,32 +185,52 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
                 Button button = new Button();
                 String val = this.model.getVal(row,col);
 
-                if(val.equals(".")){
-                    button.setGraphic(new ImageView(space));
-                    button.setMaxSize(ICON_SIZE, ICON_SIZE);
-                } else if (val.equals("*")) {
-                    button.setGraphic(new ImageView(earth));
-                    button.setMaxSize(ICON_SIZE, ICON_SIZE);
-                } else if (val.equals("A")) {
-                    button.setGraphic(new ImageView(astro));
-                    button.setMaxSize(ICON_SIZE, ICON_SIZE);
-                } else{
-                    button.setGraphic(new ImageView(robot));
-                    button.setMaxSize(ICON_SIZE, ICON_SIZE);
-                }
+                buttonImage(button, val);
+
+//                if(val.equals(".")){
+//                    button.setGraphic(new ImageView(space));
+//                    button.setMaxSize(ICON_SIZE, ICON_SIZE);
+//                } else if (val.equals("*")) {
+//                    button.setGraphic(new ImageView(earth));
+//                    button.setMaxSize(ICON_SIZE, ICON_SIZE);
+//                } else if (val.equals("A")) {
+//                    button.setGraphic(new ImageView(astro));
+//                    button.setMaxSize(ICON_SIZE, ICON_SIZE);
+//                } else{
+//                    button.setGraphic(new ImageView(robot));
+//                    button.setMaxSize(ICON_SIZE, ICON_SIZE);
+//                }
 
                 int finalRow = row;
                 int finalCol = col;
                 button.setOnAction(event -> {
                     this.model.select(finalRow, finalCol);
                 });
-                button.setStyle("-fx-background-color: transparent; -fx-padding: 0; -fx-border-width: 0;");
+                //button.setStyle("-fx-background-color: transparent; -fx-padding: 0; -fx-border-width: 0;");
 
                 // Add the button to the StackPane
                 cell.getChildren().add(button);
+                gridButtons[row][col] = button;
             }
         }
         return background;
+    }
+    public void buttonImage(Button button, String val){
+
+        if(val.equals(".")){
+            button.setGraphic(new ImageView(space));
+            button.setMaxSize(ICON_SIZE, ICON_SIZE);
+        } else if (val.equals("*")) {
+            button.setGraphic(new ImageView(earth));
+            button.setMaxSize(ICON_SIZE, ICON_SIZE);
+        } else if (val.equals("A")) {
+            button.setGraphic(new ImageView(astro));
+            button.setMaxSize(ICON_SIZE, ICON_SIZE);
+        } else{
+            button.setGraphic(new ImageView(robot));
+            button.setMaxSize(ICON_SIZE, ICON_SIZE);
+        }
+        button.setStyle("-fx-background-color: transparent; -fx-padding: 0; -fx-border-width: 0;");
     }
 
 
@@ -211,29 +245,43 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
 
         Button down = new Button("S");
         controls.add(down, 1, 2);
-        up.setOnAction(event -> {
+        down.setOnAction(event -> {
             this.model.move("s");
         });
 
-        Button rightcontrol = new Button("W");
+        Button rightcontrol = new Button("E");
         controls.add(rightcontrol, 2,1);
-        up.setOnAction(event -> {
-            this.model.move("w");
+        rightcontrol.setOnAction(event -> {
+            this.model.move("e");
         });
 
-        Button left = new Button("E");
+        Button left = new Button("W");
         controls.add(left, 0, 1);
-        up.setOnAction(event -> {
-            this.model.move("e");
+        left.setOnAction(event -> {
+            this.model.move("w");
         });
         return controls;
     }
 
     @Override
     public void update(AstroModel astroModel, String msg) {
-        if (text != null) {
 
+        this.model = astroModel;
+        if (text != null) {
             text.setText(msg);
+            updateGameboard();
+        }
+    }
+
+    public void updateGameboard(){
+
+        for (int r = 0; r < rows; r++) {
+            for (int c = 0; c < cols; c++) {
+
+                Button button = gridButtons[r][c];
+                String val = model.getVal(r, c);
+                buttonImage(button, val);
+            }
         }
     }
 

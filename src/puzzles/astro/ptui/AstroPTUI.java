@@ -54,6 +54,10 @@ public class AstroPTUI implements Observer<AstroModel, String> {
         Scanner in = new Scanner( System.in );
 
         for ( ; ; ) {
+            if(model.reachedSolution()){
+                System.out.println("Already solved");
+                break;
+            }
             System.out.print( "> " );
             String line = in.nextLine();
             String[] words = line.split( "\\s+" );
@@ -87,8 +91,9 @@ public class AstroPTUI implements Observer<AstroModel, String> {
                      }
 
                 } else if (words[0].startsWith( "r" )) {
-                    System.out.println("Puzzle reset!");
-                    init(currentFileName);
+                    //System.out.println("Puzzle reset!");
+                    model.reset();
+                    //init(currentFileName);
 
                 } else if (words[0].startsWith( "p" )) {
                     System.out.println(model.toString());;

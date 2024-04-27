@@ -21,6 +21,7 @@ public class AstroModel {
     private String board[][];
 
     private Coordinates selectedCoordinate;
+    private Boolean reachedSolution;
 
     /**
      * The view calls this to add itself as an observer.
@@ -54,6 +55,7 @@ public class AstroModel {
         rows = currentConfig.getNumRows();
         cols = currentConfig.getNumCols();
         board = currentConfig.getGrid();
+        this.reachedSolution = false;
 
         //notifyObservers("Loaded: ");
 
@@ -82,7 +84,9 @@ public class AstroModel {
         notifyObservers(msg);
     }
 
-
+    public boolean reachedSolution(){
+        return this.reachedSolution;
+    }
 
     /**
      * Resets an entire board to the start of the current board
@@ -97,9 +101,9 @@ public class AstroModel {
         rows = currentConfig.getNumRows();
         cols = currentConfig.getNumCols();
         board = currentConfig.getGrid();
+        notifyObservers("Puzzle reset");
 
-        System.out.println("Puzzle reset!");
-
+        //System.out.println("Puzzle reset!");
     }
 
     public void move(String m) {
