@@ -6,6 +6,7 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
+import javafx.stage.FileChooser;
 import puzzles.common.Coordinates;
 import puzzles.common.Observer;
 import puzzles.hoppers.model.HoppersConfig;
@@ -14,6 +15,7 @@ import puzzles.hoppers.model.HoppersModel;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
+import java.io.File;
 import java.io.IOException;
 
 public class HoppersGUI extends Application implements Observer<HoppersModel, String> {
@@ -97,7 +99,7 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
                 final int rowFinal = r;
                 final int colFinal = c;
 
-                button.setOnAction(event -> {
+                button.setOnAction(e -> {
                     model.select(rowFinal, colFinal);
                 });
 
@@ -121,18 +123,51 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
         buttonRow.getChildren().addAll(loadButton, resetButton, hintButton);
 
 
-        resetButton.setOnAction(event -> {
+        loadButton.setOnAction(e -> {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Open Resource File");
+
+            fileChooser.getExtensionFilters().addAll(
+                    new FileChooser.ExtensionFilter("Text Files", "*.txt"),
+                    new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.gif"),
+                    new FileChooser.ExtensionFilter("Audio Files", "*.wav", "*.mp3", "*.aac"),
+                    new FileChooser.ExtensionFilter("All Files", "*.*"));
+
+            File selectedFile = fileChooser.showOpenDialog(stage);
+
+            if (selectedFile != null) {
+
+                try {
+
+                    model.load(selectedFile.getPath());
+                    currentFilename = selectedFile.getPath();
+                    //updateGameBoard();
+
+                } catch (IOException ex) {
+
+                    System.out.println(ex);
+
+                }
+;            }
+
+            updateGameBoard();
+
+        });
+
+
+
+        resetButton.setOnAction(e -> {
             try {
                 model.reset();
                 updateGameBoard();
 
-            } catch (IOException e) {
-                e.printStackTrace();  
+            } catch (IOException ex) {
+                ex.printStackTrace();
             }
 
         });
 
-        hintButton.setOnAction(event -> {
+        hintButton.setOnAction(e -> {
 
             model.hint();
             updateGameBoard();
