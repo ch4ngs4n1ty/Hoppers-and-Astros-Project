@@ -17,6 +17,7 @@ import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 
 public class HoppersGUI extends Application implements Observer<HoppersModel, String> {
 
@@ -125,13 +126,13 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
 
         loadButton.setOnAction(e -> {
             FileChooser fileChooser = new FileChooser();
+
+            String currentPath = Paths.get(".").toAbsolutePath().normalize().toString();
+            fileChooser.setInitialDirectory(new File(currentPath));
+
             fileChooser.setTitle("Open Resource File");
 
-            fileChooser.getExtensionFilters().addAll(
-                    new FileChooser.ExtensionFilter("Text Files", "*.txt"),
-                    new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.gif"),
-                    new FileChooser.ExtensionFilter("Audio Files", "*.wav", "*.mp3", "*.aac"),
-                    new FileChooser.ExtensionFilter("All Files", "*.*"));
+            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Text Files", "*.txt"));
 
             File selectedFile = fileChooser.showOpenDialog(stage);
 
@@ -140,9 +141,16 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
                 try {
 
                     String path = selectedFile.getPath();
-                    model.load(path);
-                    currentFilename = path;
-                    loadBoard();
+                    String shortenedFilename = path.substring(path.lastIndexOf(File.separator) + 1);
+                    currentFilename = shortenedFilename;
+
+                    currentConfig = new HoppersConfig(currentFilename);
+
+                    text.setText(currentFilename);
+
+                    model.load(currentFilename);
+
+                    loadGameBoard();
 
                 } catch (IOException ex) {
 
@@ -172,7 +180,6 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
 
         });
 
-
         buttonRow.setAlignment(Pos.CENTER);
         wholeBoard.setBottom(buttonRow);
 
@@ -195,9 +202,15 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
 
     }
 
-    private void loadBoard() {
+    private void loadGameBoard() {
 
         gameBoard.getChildren().clear();
+
+        row = currentConfig.getRows();
+        col = currentConfig.getCols();
+        board = currentConfig.getGrid();
+
+        gridButtons = new Button[row][col];
 
         for (int r = 0; r < row; r++) {
             for (int c = 0; c < col; c++) {
@@ -210,9 +223,17 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
                 gameBoard.add(button, c, r);
 
                 button.setMaxSize(ICON_SIZE, ICON_SIZE);
+
+                final int rowFinal = r;
+                final int colFinal = c;
+
+                button.setOnAction(e -> {
+                    model.select(rowFinal, colFinal);
+                });
             }
         }
     }
+
     private void updateGameBoard() {
 
         for (int r = 0; r < row; r++) {

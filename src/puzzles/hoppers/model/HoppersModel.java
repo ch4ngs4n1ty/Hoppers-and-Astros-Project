@@ -65,9 +65,8 @@ public class HoppersModel {
         cols = currentConfig.getCols();
         board = currentConfig.getGrid();
 
-        //notifyObservers("Loaded: ");
+        notifyObservers("Loaded: " + currentFilename);
 
-        System.out.println("Loaded: " + currentFilename);
         System.out.println(toString());
 
     }
@@ -143,7 +142,7 @@ public class HoppersModel {
                 char hopVal = this.board[hopRow][hopCol];
 
                 //The value that a selected frog hops over must be a green frog
-                if (hopVal == 'G' && diagonalCheck(row1, col1, row, col)) {
+                if ((hopVal == 'G' && (diagonalCheck(row1, col1, row, col)))) {
 
                     this.board[row][col] = valStart;
                     this.board[hopRow][hopCol] = '.';
@@ -196,16 +195,6 @@ public class HoppersModel {
 
         return false;
     }
-
-    private boolean isDistanceValid(int row1, int col1, int row2, int col2) {
-        // Check if the move is exactly two cells diagonally
-        int rowDiff = Math.abs(row1 - row2);
-        int colDiff = Math.abs(col1 - col2);
-        return rowDiff == 2 && colDiff == 2;
-    }
-
-
-
     public char getValue(int row, int col) {
         return this.board[row][col];
     }
