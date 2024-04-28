@@ -56,7 +56,6 @@ public class AstroPTUI implements Observer<AstroModel, String> {
         for ( ; ; ) {
             if(model.reachedSolution()){
                 System.out.println("Already solved");
-                break;
             }
             System.out.print( "> " );
             String line = in.nextLine();
@@ -65,7 +64,7 @@ public class AstroPTUI implements Observer<AstroModel, String> {
             if (words.length > 0) {
                 if (words[0].startsWith( "l" )){
                     currentFileName = words[1];
-                    init(words[1]);
+                    model.load(words[1]);
                 }
                 if (words[0].startsWith( "q" )) {
                     break;
@@ -108,7 +107,6 @@ public class AstroPTUI implements Observer<AstroModel, String> {
     public void setFileName(String fileName){
         this.currentFileName = fileName;
     }
-
 
     public static void main(String[] args) {
         if (args.length != 1) {

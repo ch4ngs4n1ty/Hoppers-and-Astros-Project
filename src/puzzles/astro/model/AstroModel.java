@@ -16,6 +16,7 @@ public class AstroModel {
     /** the current configuration */
     private AstroConfig currentConfig;
     private String currentFilename;
+
     private static int rows;
     private static int cols;
     private String board[][];
@@ -42,7 +43,6 @@ public class AstroModel {
         }
     }
 
-
     public AstroModel(String filename) throws IOException {
         load(filename);
     }
@@ -57,9 +57,9 @@ public class AstroModel {
         board = currentConfig.getGrid();
         this.reachedSolution = false;
 
-        //notifyObservers("Loaded: ");
+        notifyObservers("Loaded: " + currentFilename);
 
-        System.out.println("Loaded: " + currentFilename);
+        //System.out.println("Loaded: " + currentFilename);
         System.out.println(toString());
 
     }
@@ -68,20 +68,33 @@ public class AstroModel {
         return board[row][col];
     }
 
+    public int getRows() {
+        return rows;
+    }
+
+    public int getCols() {
+        return cols;
+    }
+
     public void select(int row, int col){
-        Coordinates selectedCoord = new Coordinates(row, col);
+        if (!reachedSolution){
+            Coordinates selectedCoord = new Coordinates(row, col);
 
-        String msg = "";
+            String msg = "";
 
-        String pos = this.board[row][col];
-        if (pos.equals(".") || pos.equals("*") || row > rows-1 || col > cols-1){
-            msg = "No piece at " + selectedCoord;
+            String pos = this.board[row][col];
+            if (pos.equals(".") || pos.equals("*") || row > rows-1 || col > cols-1){
+                msg = "No piece at " + selectedCoord;
+            }
+            else{
+                msg =  "Selected " + selectedCoord;
+                selectedCoordinate = selectedCoord;
+            }
+            notifyObservers(msg);
+        } else {
+            notifyObservers("Already solved");
         }
-        else{
-            msg =  "Selected " + selectedCoord;
-            selectedCoordinate = selectedCoord;
-        }
-        notifyObservers(msg);
+
     }
 
     public boolean reachedSolution(){
@@ -93,6 +106,7 @@ public class AstroModel {
      * @throws IOException
      */
     public void reset() throws IOException {
+        reachedSolution = false;
 
         currentConfig = new AstroConfig(this.currentFilename);
 
@@ -144,6 +158,9 @@ public class AstroModel {
             currentConfig = new AstroConfig(this.currentConfig, explorer, newC);
             board = currentConfig.getGrid();
             notifyObservers("Moved from " + selectedCoordinate + "  to " + newC);
+            if(currentConfig.isSolution()){
+                reachedSolution = true;
+            }
         }
         selectedCoordinate = null;
     }
@@ -244,15 +261,24 @@ public class AstroModel {
     }
 
     public void hint(){
-        Solver solveAstroPuzzle = new Solver(currentConfig);
-        LinkedList<Configuration> resultingPath = (LinkedList<Configuration>) solveAstroPuzzle.solve(currentConfig);
-        if(resultingPath == null){
-            notifyObservers("No solution");
+        if(!reachedSolution){
+            Solver solveAstroPuzzle = new Solver(currentConfig);
+            LinkedList<Configuration> resultingPath = (LinkedList<Configuration>) solveAstroPuzzle.solve(currentConfig);
+            if(resultingPath == null){
+                notifyObservers("No solution");
+            }
+            else{
+                this.currentConfig = (AstroConfig) resultingPath.get(1);
+                this.board = currentConfig.getGrid();
+                notifyObservers("Next step!");
+                if(currentConfig.isSolution()){
+                    reachedSolution = true;
+                }
+
+            }
         }
         else{
-            this.currentConfig = (AstroConfig) resultingPath.get(1);
-            this.board = currentConfig.getGrid();
-            notifyObservers("Next step!");
+            notifyObservers("Already Solved");
         }
     }
 

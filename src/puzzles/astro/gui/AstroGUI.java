@@ -6,6 +6,7 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
+import javafx.stage.FileChooser;
 import puzzles.astro.model.AstroConfig;
 import puzzles.astro.model.AstroModel;
 import puzzles.common.Coordinates;
@@ -15,7 +16,9 @@ import puzzles.hoppers.model.HoppersModel;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 
 public class AstroGUI extends Application implements Observer<AstroModel, String> {
     /** The resources directory is located directly underneath the gui package */
@@ -27,7 +30,9 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
     private int rows;
     private int cols;
     private Button gridButtons[][];
+    private GridPane gameBoard;
 
+    private Stage stage;
     private final static String RESOURCES_DIR = "resources/";
 
     // for demonstration purposes
@@ -62,7 +67,7 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
         BorderPane wholeBoard = new BorderPane();
 
         // creates gameboard and sets it to the left of the window
-        GridPane gameBoard = makeBackground(rows, cols);
+        gameBoard = makeBackground(rows, cols);
         wholeBoard.setLeft(gameBoard);
 
         //sets the message to the top
@@ -93,6 +98,46 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
                 throw new RuntimeException(e);
             }
         });
+        loadButton.setOnAction(e -> {
+
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Open Resource File");
+
+            fileChooser.getExtensionFilters().addAll(
+                    new FileChooser.ExtensionFilter("Text Files", "*.txt"),
+                    new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.gif"),
+                    new FileChooser.ExtensionFilter("Audio Files", "*.wav", "*.mp3", "*.aac"),
+                    new FileChooser.ExtensionFilter("All Files", "*.*"));
+            String currentPath = Paths.get(".").toAbsolutePath().normalize().toString();
+            fileChooser.setInitialDirectory(new File(currentPath));
+
+            File selectedFile = fileChooser.showOpenDialog(stage);
+
+            if (selectedFile != null) {
+                try {
+
+                    //gameBoard.getChildren().clear();
+                    model.load(selectedFile.getPath());
+
+                    this.rows = model.getRows();
+                    this.cols = model.getCols();
+
+                    gameBoard = makeBackground(rows, cols);
+                    wholeBoard.setLeft(gameBoard);
+
+
+                    fileName = selectedFile.getPath();
+                    fileName = this.fileName.substring(this.fileName.lastIndexOf(File.separator) + 1);
+
+                    updateGameboard();
+                } catch (IOException ex) {
+
+                    System.out.println(ex);
+                }
+            }
+            updateGameboard();
+
+        });
 
 
         buttonRow.getChildren().addAll(loadButton, resetButton, hintButton);
@@ -105,69 +150,13 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
         controls.setAlignment(Pos.CENTER);
         wholeBoard.setCenter(controls);
 
-//        Button button = new Button();
-//        button.setGraphic(new ImageView(robot));
-//        button.setBackground(background);
-//        button.setMinSize(ICON_SIZE, ICON_SIZE);
-//        button.setMaxSize(ICON_SIZE, ICON_SIZE);
-//        Scene scene = new Scene(button);
-//        //Scene scene = new Scene(borderPane);
-
         //stage.setScene(scene);
         Scene scene = new Scene(wholeBoard);
         stage.setScene(scene);
         stage.setTitle("AstroGUI");
+        stage.sizeToScene();
         stage.show();
     }
-
-//    public GridPane makeBackground(int rows, int cols){
-//        GridPane background = new GridPane();
-//        for(int row = 0; row< rows; row++){
-//            for(int col = 0; col < cols; col++){
-//
-//                StackPane cell = new StackPane();
-//
-//
-//                cell.setBackground(this.background);
-//
-//                cell.setMinSize(ICON_SIZE, ICON_SIZE);
-//                cell.setMaxSize(ICON_SIZE, ICON_SIZE);
-//
-//                // Add the cell to the GridPane at the specified row and column
-//                background.add(cell, col, row);
-//
-//                Button button = new Button();
-//                String val = this.model.getVal(row,col);
-//
-//
-//                if(val.equals(".")){
-//                    button.setGraphic(new ImageView(space));
-//                    button.setMaxSize(ICON_SIZE, ICON_SIZE);
-//
-//                } else if (val.equals("*")) {
-//                    button.setGraphic(new ImageView(earth));
-//                    button.setMaxSize(ICON_SIZE, ICON_SIZE);
-//
-//                } else if (val.equals("A")) {
-//                    button.setGraphic(new ImageView(astro));
-//                    button.setMaxSize(ICON_SIZE, ICON_SIZE);
-//
-//
-//                } else{
-//                    button.setGraphic(new ImageView(robot));
-//                    button.setMaxSize(ICON_SIZE, ICON_SIZE);
-//                }
-//                int finalRow = row;
-//                int finalCol = col;
-//                button.setOnAction(event -> {
-//                    this.model.select(finalRow, finalCol);
-//                });
-//                button.setStyle("-fx-background-color: transparent; -fx-padding: 0; -fx-border-width: 0;");
-//                background.add(button, col, row);
-//            }
-//        }
-//        return background;
-//    }
 
     public GridPane makeBackground(int rows, int cols){
         GridPane background = new GridPane();
@@ -186,20 +175,6 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
                 String val = this.model.getVal(row,col);
 
                 buttonImage(button, val);
-
-//                if(val.equals(".")){
-//                    button.setGraphic(new ImageView(space));
-//                    button.setMaxSize(ICON_SIZE, ICON_SIZE);
-//                } else if (val.equals("*")) {
-//                    button.setGraphic(new ImageView(earth));
-//                    button.setMaxSize(ICON_SIZE, ICON_SIZE);
-//                } else if (val.equals("A")) {
-//                    button.setGraphic(new ImageView(astro));
-//                    button.setMaxSize(ICON_SIZE, ICON_SIZE);
-//                } else{
-//                    button.setGraphic(new ImageView(robot));
-//                    button.setMaxSize(ICON_SIZE, ICON_SIZE);
-//                }
 
                 int finalRow = row;
                 int finalCol = col;
@@ -267,9 +242,13 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
     public void update(AstroModel astroModel, String msg) {
 
         this.model = astroModel;
+        this.rows = model.getRows();
+        this.cols = model.getCols();
+
         if (text != null) {
             text.setText(msg);
             updateGameboard();
+
         }
     }
 
@@ -277,7 +256,6 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
 
         for (int r = 0; r < rows; r++) {
             for (int c = 0; c < cols; c++) {
-
                 Button button = gridButtons[r][c];
                 String val = model.getVal(r, c);
                 buttonImage(button, val);
