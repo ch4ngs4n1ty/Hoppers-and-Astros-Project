@@ -31,6 +31,7 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
     private GridPane gameBoard;
     private Button gridButtons[][];
     private Stage stage;
+    private BorderPane wholeBoard;
     private static final char GREEN = 'G';
     private static final char RED = 'R';
     private static final char LILYPAD = '.';
@@ -52,13 +53,15 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
 
         String filename = getParameters().getRaw().get(0);
         currentFilename = filename;
-        this.model = new HoppersModel(filename);
+        this.model = new HoppersModel(currentFilename);
         this.model.addObserver(this);
 
     }
 
     @Override
     public void start(Stage stage) throws Exception {
+
+        this.stage = stage;
 
         currentConfig = new HoppersConfig(currentFilename);
 
@@ -68,9 +71,7 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
         gridButtons = new Button[row][col];
 
         stage.setTitle("Hoppers GUI");
-        BorderPane wholeBoard = new BorderPane();
-
-        stage.sizeToScene();
+        wholeBoard = new BorderPane();
 
         FlowPane currentLabel = new FlowPane();
 
@@ -84,6 +85,8 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
 
         //Gridpane full of buttons that will be set in the center
         gameBoard = new GridPane();
+
+        gameBoard.setAlignment(Pos.CENTER);
 
         for (int r = 0; r < row; r++) {
 
@@ -108,7 +111,6 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
             }
         }
 
-        gameBoard.setAlignment(Pos.CENTER);
         wholeBoard.setCenter(gameBoard);
 
         FlowPane buttonRow = new FlowPane();
@@ -125,6 +127,7 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
         buttonRow.getChildren().addAll(loadButton, resetButton, hintButton);
 
         loadButton.setOnAction(e -> {
+
             FileChooser fileChooser = new FileChooser();
 
             String currentPath = Paths.get(".").toAbsolutePath().normalize().toString();
@@ -138,26 +141,22 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
 
             if (selectedFile != null) {
 
+                String path = selectedFile.getPath();
+                String shortenedFilename = path.substring(path.lastIndexOf(File.separator) + 1);
+
                 try {
 
-                    String path = selectedFile.getPath();
-                    String shortenedFilename = path.substring(path.lastIndexOf(File.separator) + 1);
                     currentFilename = shortenedFilename;
-
-                    currentConfig = new HoppersConfig(currentFilename);
-
-                    text.setText(currentFilename);
-
                     model.load(currentFilename);
 
                     loadGameBoard();
 
                 } catch (IOException ex) {
 
-                    System.out.println(ex);
-
+                    throw new RuntimeException(ex);
                 }
-;            }
+
+            }
 
         });
 
@@ -168,7 +167,9 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
                 updateGameBoard();
 
             } catch (IOException ex) {
+
                 ex.printStackTrace();
+
             }
 
         });
@@ -185,7 +186,7 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
 
         Scene scene = new Scene(wholeBoard);
         stage.setScene(scene);
-
+        stage.setResizable(true);
         stage.show();
 
     }
@@ -194,8 +195,45 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
     public void update(HoppersModel hoppersModel, String msg) {
 
         if (text != null) {
+
             text.setText(msg);
-            updateGameBoard();
+
+            HoppersConfig currentConfiguration = hoppersModel.getCurrentConfig();
+
+            gameBoard = new GridPane();
+
+            row = currentConfiguration.getRows();
+            col = currentConfiguration.getCols();
+            board = currentConfiguration.getGrid();
+            gridButtons = new Button[row][col];
+
+            gameBoard.setAlignment(Pos.CENTER);
+
+            for (int r = 0; r < row; r++) {
+
+                for (int c = 0; c < col; c++) {
+
+                    char val = model.getValue(r, c);
+
+                    Button button = new Button();
+                    button.setMaxSize(ICON_SIZE, ICON_SIZE);
+                    buttonGraphics(button, val);
+                    gridButtons[r][c] = button;
+
+                    gameBoard.add(button, c, r);
+
+                    final int rowFinal = r;
+                    final int colFinal = c;
+
+                    button.setOnAction(e -> {
+                        model.select(rowFinal, colFinal);
+                    });
+
+                }
+            }
+
+            wholeBoard.setCenter(gameBoard);
+
             stage.sizeToScene();
 
         }
@@ -205,12 +243,6 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
     private void loadGameBoard() {
 
         gameBoard.getChildren().clear();
-
-        row = currentConfig.getRows();
-        col = currentConfig.getCols();
-        board = currentConfig.getGrid();
-
-        gridButtons = new Button[row][col];
 
         for (int r = 0; r < row; r++) {
             for (int c = 0; c < col; c++) {
@@ -251,13 +283,21 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
     private void buttonGraphics(Button button, char val) {
 
         if (val == RED) {
+
             button.setGraphic(new ImageView(redFrog));
+
         } else if (val == GREEN) {
+
             button.setGraphic(new ImageView(greenFrog));
+
         } else if (val == LILYPAD) {
+
             button.setGraphic(new ImageView(lilyPad));
+
         } else if (val == WATER) {
+
             button.setGraphic(new ImageView(water));
+
         }
 
         button.setStyle("-fx-background-color: transparent; -fx-padding: 0; -fx-border-width: 0;");

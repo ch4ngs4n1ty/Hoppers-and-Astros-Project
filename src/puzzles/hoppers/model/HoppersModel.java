@@ -15,18 +15,15 @@ public class HoppersModel {
     private final List<Observer<HoppersModel, String>> observers = new LinkedList<>();
 
     /** the current configuration */
-    private HoppersConfig currentConfig;
+    public HoppersConfig currentConfig;
     private String currentFilename;
     private static int rows;
     private static int cols;
     private char board[][];
-    private char copyBoard[][];
     private Coordinates selectedCord;
     private char valStart;
     private int row1;
     private int col1;
-    private int row2;
-    private int col2;
     private boolean hasCords1 = false;
 
 
@@ -67,8 +64,6 @@ public class HoppersModel {
 
         notifyObservers("Loaded: " + currentFilename);
 
-        System.out.println(toString());
-
     }
 
     /**
@@ -91,10 +86,16 @@ public class HoppersModel {
 
     }
 
+    public HoppersConfig getCurrentConfig() {
+
+        return this.currentConfig;
+
+    }
+
     public void hint(){
         Solver solveHopperPuzzle = new Solver(currentConfig);
         LinkedList<Configuration> resultingPath = (LinkedList<Configuration>) solveHopperPuzzle.solve(currentConfig);
-        if (resultingPath == null){
+        if (resultingPath.size() <= 1){
             notifyObservers("No solution");
         } else {
 
@@ -142,18 +143,23 @@ public class HoppersModel {
                 char hopVal = this.board[hopRow][hopCol];
 
                 //The value that a selected frog hops over must be a green frog
-                if ((hopVal == 'G' && (diagonalCheck(row1, col1, row, col)))) {
+                if (hopVal == 'G') {
 
-                    this.board[row][col] = valStart;
-                    this.board[hopRow][hopCol] = '.';
-                    this.board[row1][col1] = valFinish;
+                    if (diagonalCheck(row1, col1, row, col) || (straightCheck(row1, col1, row, col))) {
 
-                    msg = "Jumped from " + selectedCord + "  to " + endCord;
+                        this.board[row][col] = valStart;
+                        this.board[hopRow][hopCol] = '.';
+                        this.board[row1][col1] = valFinish;
 
-                    hasCords1 = false;
+                        msg = "Jumped from " + selectedCord + "  to " + endCord;
+
+                        hasCords1 = false;
+
+                    }
 
                 } else {
 
+                    hasCords1 = false;
                     msg = "Can't jump from " + selectedCord + " to " + endCord;
 
                 }
@@ -195,6 +201,36 @@ public class HoppersModel {
 
         return false;
     }
+
+    private boolean straightCheck(int row1, int col1, int row2, int col2) {
+
+        int rowCheck = row2 - row1;
+        int colCheck = col2 - col1;
+
+
+        if (rowCheck == -4 && colCheck == 0) {
+
+            return true;
+
+        } else if (rowCheck == 0 && colCheck == -4) {
+
+            return true;
+
+        } else if (rowCheck == 4 && colCheck == 0) {
+
+            return true;
+
+        } else if (rowCheck == 0 && colCheck == 4) {
+
+            return true;
+
+        }
+
+        return false;
+    }
+
+
+
     public char getValue(int row, int col) {
         return this.board[row][col];
     }
