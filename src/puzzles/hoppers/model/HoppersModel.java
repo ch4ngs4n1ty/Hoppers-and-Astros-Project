@@ -86,6 +86,12 @@ public class HoppersModel {
 
     }
 
+    public HoppersConfig getCurrentConfig() {
+
+        return this.currentConfig;
+
+    }
+
     public void hint(){
         Solver solveHopperPuzzle = new Solver(currentConfig);
         LinkedList<Configuration> resultingPath = (LinkedList<Configuration>) solveHopperPuzzle.solve(currentConfig);
