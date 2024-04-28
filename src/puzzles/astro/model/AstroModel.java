@@ -47,6 +47,10 @@ public class AstroModel {
         load(filename);
     }
 
+    public AstroConfig getCurrentConfig(){
+        return this.currentConfig;
+    }
+
     public void load(String filename) throws IOException {
 
         currentConfig = new AstroConfig(filename);
@@ -60,7 +64,7 @@ public class AstroModel {
         notifyObservers("Loaded: " + currentFilename);
 
         //System.out.println("Loaded: " + currentFilename);
-        System.out.println(toString());
+        //System.out.println(toString());
 
     }
 
@@ -121,6 +125,10 @@ public class AstroModel {
     }
 
     public void move(String m) {
+        if(reachedSolution){
+            notifyObservers("Already solved");
+            return;
+        }
         if (selectedCoordinate == null) {
             notifyObservers("No piece selected");
             return;

@@ -13,7 +13,11 @@ public class AstroPTUI implements Observer<AstroModel, String> {
 
     public void init(String filename) throws IOException {
         this.model = new AstroModel(filename);
+        setFileName(filename);
         this.model.addObserver(this);
+
+        System.out.println("Loaded: " + currentFileName);
+        System.out.println(this.model.toString());
         displayHelp();
     }
 
@@ -64,7 +68,7 @@ public class AstroPTUI implements Observer<AstroModel, String> {
             if (words.length > 0) {
                 if (words[0].startsWith( "l" )){
                     currentFileName = words[1];
-                    model.load(words[1]);
+                    model.load(currentFileName);
                 }
                 if (words[0].startsWith( "q" )) {
                     break;
