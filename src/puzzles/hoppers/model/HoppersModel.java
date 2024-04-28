@@ -95,7 +95,7 @@ public class HoppersModel {
     public void hint(){
         Solver solveHopperPuzzle = new Solver(currentConfig);
         LinkedList<Configuration> resultingPath = (LinkedList<Configuration>) solveHopperPuzzle.solve(currentConfig);
-        if (resultingPath == null){
+        if (resultingPath.size() <= 1){
             notifyObservers("No solution");
         } else {
 

@@ -237,7 +237,7 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
             stage.sizeToScene();
 
         }
-        
+
     }
 
     private void loadGameBoard() {
