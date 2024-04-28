@@ -3,6 +3,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
@@ -60,6 +61,8 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
     @Override
     public void start(Stage stage) throws Exception {
 
+        this.stage = stage;
+
         currentConfig = new HoppersConfig(currentFilename);
 
         row = currentConfig.getRows();
@@ -85,6 +88,8 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
         //Gridpane full of buttons that will be set in the center
         gameBoard = new GridPane();
 
+        gameBoard.setAlignment(Pos.CENTER);
+
         for (int r = 0; r < row; r++) {
 
             for (int c = 0; c < col; c++) {
@@ -107,8 +112,6 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
 
             }
         }
-
-        gameBoard.setAlignment(Pos.CENTER);
         wholeBoard.setCenter(gameBoard);
 
         FlowPane buttonRow = new FlowPane();
@@ -125,6 +128,7 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
         buttonRow.getChildren().addAll(loadButton, resetButton, hintButton);
 
         loadButton.setOnAction(e -> {
+
             FileChooser fileChooser = new FileChooser();
 
             String currentPath = Paths.get(".").toAbsolutePath().normalize().toString();
@@ -138,26 +142,23 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
 
             if (selectedFile != null) {
 
+                String path = selectedFile.getPath();
+                String shortenedFilename = path.substring(path.lastIndexOf(File.separator) + 1);
+
                 try {
 
-                    String path = selectedFile.getPath();
-                    String shortenedFilename = path.substring(path.lastIndexOf(File.separator) + 1);
                     currentFilename = shortenedFilename;
-
-                    currentConfig = new HoppersConfig(currentFilename);
-
-                    text.setText(currentFilename);
-
                     model.load(currentFilename);
 
                     loadGameBoard();
 
                 } catch (IOException ex) {
 
-                    System.out.println(ex);
-
+                    throw new RuntimeException(ex);
                 }
-;            }
+
+
+            }
 
         });
 
@@ -194,9 +195,15 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
     public void update(HoppersModel hoppersModel, String msg) {
 
         if (text != null) {
+
             text.setText(msg);
-            updateGameBoard();
+
+            row = hoppersModel.currentConfig.getRows();
+            col = hoppersModel.currentConfig.getCols();
+            board = hoppersModel.currentConfig.getGrid();
             stage.sizeToScene();
+
+            loadGameBoard();
 
         }
 
@@ -205,12 +212,6 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
     private void loadGameBoard() {
 
         gameBoard.getChildren().clear();
-
-        row = currentConfig.getRows();
-        col = currentConfig.getCols();
-        board = currentConfig.getGrid();
-
-        gridButtons = new Button[row][col];
 
         for (int r = 0; r < row; r++) {
             for (int c = 0; c < col; c++) {

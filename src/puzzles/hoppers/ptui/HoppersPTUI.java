@@ -1,5 +1,6 @@
 package puzzles.hoppers.ptui;
 import puzzles.common.Observer;
+import puzzles.hoppers.model.HoppersConfig;
 import puzzles.hoppers.model.HoppersModel;
 import java.io.IOException;
 import java.util.Scanner;
@@ -11,6 +12,10 @@ public class HoppersPTUI implements Observer<HoppersModel, String> {
     public void init(String filename) throws IOException {
         this.model = new HoppersModel(filename);
         this.model.addObserver(this);
+
+        System.out.println("Loaded: " + filename);
+        System.out.println(this.model.toString());
+
         displayHelp();
     }
 
@@ -44,7 +49,6 @@ public class HoppersPTUI implements Observer<HoppersModel, String> {
 
                     this.currentFilename = words[1];
                     this.model.load(currentFilename);
-
 
                 } else if (words[0].startsWith("s") && words.length == 3) {
 
