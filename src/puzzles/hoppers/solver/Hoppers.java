@@ -8,6 +8,15 @@ import java.io.IOException;
 import java.io.ObjectInputFilter;
 import java.util.Collection;
 
+/**
+ * Hoppers game that's been made by
+ * The class involves MVC.
+ * A game with hopping frogs on pond with lily pads.
+ * Can win by only having a Red frog on the pond.
+ *
+ * @author Ethan Chang
+ */
+
 public class Hoppers {
     public static void main(String[] args) {
         if (args.length != 1) {

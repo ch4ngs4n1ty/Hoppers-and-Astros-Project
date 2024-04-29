@@ -82,7 +82,7 @@ public class HoppersModel {
 
         hasCords1 = false;
 
-        System.out.println("Puzzle reset!");
+        notifyObservers("Puzzle reset!");
 
     }
 
@@ -95,8 +95,15 @@ public class HoppersModel {
     public void hint(){
         Solver solveHopperPuzzle = new Solver(currentConfig);
         LinkedList<Configuration> resultingPath = (LinkedList<Configuration>) solveHopperPuzzle.solve(currentConfig);
-        if (resultingPath.size() <= 1){
-            notifyObservers("No solution");
+
+        if (resultingPath == null) {
+
+            notifyObservers("No solution!");
+
+        } else if (resultingPath.size() <= 1){
+
+            notifyObservers("Already solved!");
+
         } else {
 
             this.currentConfig = (HoppersConfig) resultingPath.get(1);
@@ -166,6 +173,7 @@ public class HoppersModel {
 
             } else {
 
+                hasCords1 = false;
                 msg = "Can't jump from " + selectedCord + " to " + endCord;
 
             }
