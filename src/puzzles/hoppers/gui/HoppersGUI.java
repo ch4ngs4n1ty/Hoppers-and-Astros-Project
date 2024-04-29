@@ -19,18 +19,27 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 
+/**
+ * Hoppers game that's been made by
+ * The class involves MVC.
+ * A game with hopping frogs on pond with lily pads.
+ * Can win by only having a Red frog on the pond.
+ *
+ * @author Ethan Chang
+ */
+
 public class HoppersGUI extends Application implements Observer<HoppersModel, String> {
 
     private HoppersModel model;
+    private Stage stage;
     private HoppersConfig currentConfig;
     private String currentFilename;
-    private char board[][];
     private int row;
     private int col;
+    private char board[][];
     private Label text;
     private GridPane gameBoard;
     private Button gridButtons[][];
-    private Stage stage;
     private BorderPane wholeBoard;
     private static final char GREEN = 'G';
     private static final char RED = 'R';

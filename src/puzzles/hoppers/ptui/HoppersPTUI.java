@@ -10,6 +10,7 @@ public class HoppersPTUI implements Observer<HoppersModel, String> {
     private String currentFilename;
 
     public void init(String filename) throws IOException {
+
         this.model = new HoppersModel(filename);
         this.model.addObserver(this);
 
@@ -72,7 +73,12 @@ public class HoppersPTUI implements Observer<HoppersModel, String> {
         }
     }
 
+    /**
+     * Helper method to get current file name
+     * @param filename: Filename from the command args
+     */
     public void saveFileName(String filename) {
+
         this.currentFilename = filename;
 
     }

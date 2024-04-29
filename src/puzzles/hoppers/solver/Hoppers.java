@@ -34,7 +34,7 @@ public class Hoppers {
 
                 int i = 0;
 
-                if (path.size() <= 1) {
+                if (path == null) {
 
                     System.out.println("No solution");
 

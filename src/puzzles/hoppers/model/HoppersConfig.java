@@ -13,6 +13,12 @@ import java.util.*;
 
 // TODO: implement your HoppersConfig for the common solver
 
+/**
+ *
+ *
+ *
+ */
+
 public class HoppersConfig implements Configuration{
 
     private int rows;
@@ -62,8 +68,9 @@ public class HoppersConfig implements Configuration{
     }
 
     /**
-     * 
+     * Checks to see if the hopper puzzle reaches the solution
      * @return: True if the solution is found or false if the solution is not found
+     *
      */
     @Override
     public boolean isSolution() {
@@ -72,14 +79,26 @@ public class HoppersConfig implements Configuration{
 
             for (int c = 0; c < cols; c++) {
 
-                if (grid[r][c] == 'G') {
+                char val = grid[r][c];
+
+                if (val == 'G') {
+
                     return false;
+
                 }
+
             }
+
         }
+
         return true;
+
     }
 
+    /**
+     * Copy constructor for HoppersConfig
+     * @param other: the copied config
+     */
     private HoppersConfig(HoppersConfig other) {
 
         this.rows = other.rows;
@@ -94,6 +113,10 @@ public class HoppersConfig implements Configuration{
         }
     }
 
+    /**
+     * Gets every possible configuration for Hoppers
+     * @return: List of neighbors for each green frog and a red frog
+     */
     @Override
     public Collection<Configuration> getNeighbors() {
 
@@ -125,33 +148,46 @@ public class HoppersConfig implements Configuration{
                     //Iterates 2d array of possible moves
                     for (int[] direction : dirConfigs) {
 
-                        //Neighbor values
+                        //Neighbor values, finds empty spots in the grid
                         int neighborRow = r + direction[0];
                         int neighborCol = c + direction[1];
 
+                        //Hop values, must be green frog to hop over
                         int hopRow = r + direction[0] / 2;
                         int hopCol = c + direction[1] / 2;
 
+                        //Checks to see if neighbor coordinates are valid and that are empty
                         if (checkNeighborCords(neighborRow, neighborCol)) {
 
+                            //Checks to see if hop value coordinates are valid and that are green frogs only
                             if (checkHopCords(hopRow, hopCol)) {
 
                                 char hopVal = grid[hopRow][hopCol];
 
                                 if (val == GREEN && hopVal == GREEN) {
 
+                                    //Creates a copy config
                                     HoppersConfig neighborConfig = new HoppersConfig(this);
+
+                                    //Sets everything else to empty except neighbor val to green frog
                                     neighborConfig.grid[r][c] = EMPTY;
                                     neighborConfig.grid[hopRow][hopCol] = EMPTY;
                                     neighborConfig.grid[neighborRow][neighborCol] = GREEN;
+
+                                    //Adds the possible neighbor to neighbor list
                                     neighbors.add(neighborConfig);
 
-                                } else if (val == RED && grid[hopRow][hopCol] == GREEN) {
+                                } else if (val == RED && hopVal == GREEN) {
 
+                                    //Creates a copy config
                                     HoppersConfig neighborConfig = new HoppersConfig(this);
+
+                                    //Sets everything else to empty except neighbor val to red frog
                                     neighborConfig.grid[r][c] = EMPTY;
                                     neighborConfig.grid[hopRow][hopCol] = EMPTY;
                                     neighborConfig.grid[neighborRow][neighborCol] = RED;
+
+                                    //Adds the possible neighbor to neighbor list
                                     neighbors.add(neighborConfig);
 
                                 }
@@ -161,17 +197,24 @@ public class HoppersConfig implements Configuration{
                 }
             }
         }
+
         return neighbors;
+
     }
 
-
+    /**
+     * Checks to see if neighbor cords are valid or not
+     * @param neighborRow: Row number of neighbor
+     * @param neighborCol: Col number of neighbor
+     * @return: Returns true if neighbor cords value is empty false if neighbor cord represents something else
+     */
     public boolean checkNeighborCords(int neighborRow, int neighborCol) {
-
-        char neighborVal = grid[neighborRow][neighborCol];
 
         if (neighborRow >= 0 && neighborRow < rows) {
 
             if (neighborCol >= 0 && neighborCol < cols) {
+
+                char neighborVal = grid[neighborRow][neighborCol];
 
                 if (neighborVal == EMPTY) {
 
@@ -187,13 +230,21 @@ public class HoppersConfig implements Configuration{
 
     }
 
+    /**
+     * Checks to see if hop cords are valid or not
+     * @param hopRow: Row number of hop
+     * @param hopCol: Col number of col
+     * @return: Returns true if hop cords value is green false if hop cords represent something else
+     */
     public boolean checkHopCords(int hopRow, int hopCol) {
 
         if (hopRow >= 0 && hopRow < rows) {
 
             if (hopCol >= 0 && hopCol < cols) {
 
-                if (grid[hopRow][hopCol] != INVALID && grid[hopRow][hopCol] != RED) {
+                char val = grid[hopRow][hopCol];
+
+                if (val == GREEN) {
 
                     return true;
 
@@ -207,28 +258,46 @@ public class HoppersConfig implements Configuration{
 
     }
 
+    /**
+     * Gets the current 2d array of grid
+     * @return: 2d array char grid
+     */
     public char[][] getGrid() {
         return this.grid;
     }
 
+    /**
+     * Gets number of rows for current config
+     * @return: Number of rows
+     */
     public int getRows() {
 
         return this.rows;
 
     }
 
+    /**
+     * Gets number of cols for current config
+     * @return: Number of cols
+     */
     public int getCols() {
 
         return this.cols;
 
     }
 
+    /**
+     * Checks to see if other config matches with this config
+     * @param other: Other HoppersConfig
+     * @return: True if these two configs equal, false if they don't
+     */
     @Override
     public boolean equals(Object other) {
 
         boolean result = false;
 
         if (other instanceof HoppersConfig) {
+
             HoppersConfig otherHoppersConfig = (HoppersConfig) other;
 
             result = Arrays.deepEquals(this.grid, otherHoppersConfig.grid);
@@ -236,7 +305,8 @@ public class HoppersConfig implements Configuration{
 
         return result;
     }
-    
+
+
     @Override
     public int hashCode() {
 
@@ -244,25 +314,33 @@ public class HoppersConfig implements Configuration{
 
     }
 
+    /**
+     * Builds a board for the current config
+     * @return: A board of the current config
+     */
     @Override
     public String toString() {
 
         StringBuilder result = new StringBuilder();
 
-        for (int row=0; row < getRows(); ++row) {
+        for (int row = 0; row < getRows(); row++) {
 
-            for (int col = 0; col < getCols(); ++col) {
+            for (int col = 0; col < getCols(); col++) {
 
                 result.append(grid[row][col]);
 
                 if (col < getCols() - 1) {
+
                     result.append(" ");
+
                 }
 
             }
 
             if (row < getRows() - 1) {
+
                 result.append(System.lineSeparator());
+
             }
 
         }
