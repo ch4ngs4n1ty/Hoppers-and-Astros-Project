@@ -25,16 +25,25 @@ public class HoppersConfig implements Configuration{
     private char GREEN = 'G';
     private char RED = 'R';
 
+
+    /**
+     * HopperConfig constructor that reads the file and then stores each value inside the grid
+     * @param filename: Filename from hopper text files
+     * @throws IOException
+     */
     public HoppersConfig(String filename) throws IOException {
 
         try (BufferedReader in = new BufferedReader(new FileReader(filename))){
 
             String cords = in.readLine();
 
+            //Gets list of number of rows and cols
             String[] fields = cords.split("\\s+");
 
             this.rows = Integer.parseInt(fields[0]);
             this.cols = Integer.parseInt(fields[1]);
+
+            //Creates a new char 2d array grid
             this.grid = new char[rows][cols];
 
             for (int r = 0; r < rows; r++) {
@@ -44,6 +53,7 @@ public class HoppersConfig implements Configuration{
 
                 for (int c = 0; c < cols; c++) {
 
+                    //Reads each line and stores char in grid
                     this.grid[r][c] = lines[c].charAt(0);
 
                 }
@@ -51,6 +61,10 @@ public class HoppersConfig implements Configuration{
         }
     }
 
+    /**
+     * 
+     * @return: True if the solution is found or false if the solution is not found
+     */
     @Override
     public boolean isSolution() {
 
@@ -97,25 +111,34 @@ public class HoppersConfig implements Configuration{
 
                     //These are the possible neighbors
                     if ((r + c) % 2 == 0) {
+
                         //Directions that can be used for even number coordinate, total of 8 moves
                         dirConfigs = this.evenMoves;
+
                     } else {
+
                         //Directions that can be used for odd number coordinate, total of 4 moves
                         dirConfigs = this.oddMoves;
+
                     }
 
-                    for (int[] dir : dirConfigs) {
+                    //Iterates 2d array of possible moves
+                    for (int[] direction : dirConfigs) {
 
-                        int neighborRow = r + dir[0];
-                        int neighborCol = c + dir[1];
-                        int hopRow = r + dir[0] / 2;
-                        int hopCol = c + dir[1] / 2;
+                        //Neighbor values
+                        int neighborRow = r + direction[0];
+                        int neighborCol = c + direction[1];
+
+                        int hopRow = r + direction[0] / 2;
+                        int hopCol = c + direction[1] / 2;
 
                         if (checkNeighborCords(neighborRow, neighborCol)) {
 
                             if (checkHopCords(hopRow, hopCol)) {
 
-                                if (val == GREEN && grid[hopRow][hopCol] == GREEN) {
+                                char hopVal = grid[hopRow][hopCol];
+
+                                if (val == GREEN && hopVal == GREEN) {
 
                                     HoppersConfig neighborConfig = new HoppersConfig(this);
                                     neighborConfig.grid[r][c] = EMPTY;
@@ -144,26 +167,44 @@ public class HoppersConfig implements Configuration{
 
     public boolean checkNeighborCords(int neighborRow, int neighborCol) {
 
+        char neighborVal = grid[neighborRow][neighborCol];
+
         if (neighborRow >= 0 && neighborRow < rows) {
+
             if (neighborCol >= 0 && neighborCol < cols) {
-                if (grid[neighborRow][neighborCol] == EMPTY) {
+
+                if (neighborVal == EMPTY) {
+
                     return true;
+
                 }
+
             }
+
         }
+
         return false;
+
     }
 
     public boolean checkHopCords(int hopRow, int hopCol) {
 
         if (hopRow >= 0 && hopRow < rows) {
+
             if (hopCol >= 0 && hopCol < cols) {
+
                 if (grid[hopRow][hopCol] != INVALID && grid[hopRow][hopCol] != RED) {
+
                     return true;
+
                 }
+
             }
+
         }
+
         return false;
+
     }
 
     public char[][] getGrid() {
