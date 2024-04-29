@@ -42,7 +42,6 @@ public class HoppersModel {
     /** checks to see if the first cord has been selected */
     private boolean hasCords1 = false;
 
-
     /**
      * The view calls this to add itself as an observer.
      *
@@ -120,47 +119,53 @@ public class HoppersModel {
     }
 
     /**
-     * Gets current HoppersConfig
-     * @return: current HoppersConfig
-     */
-    public HoppersConfig getCurrentConfig() {
-
-        return this.currentConfig;
-
-    }
-
-    /**
      * Gives the hint to the user
      */
-    public void hint(){
+    public void hint() {
 
+        //Creates a new solver for current config
         Solver solveHopperPuzzle = new Solver(currentConfig);
+
+        //Gets the shortest path for the current config
         LinkedList<Configuration> resultingPath = (LinkedList<Configuration>) solveHopperPuzzle.solve(currentConfig);
 
+        //If the path is null, then there's no possible solution
         if (resultingPath == null) {
 
             notifyObservers("No solution!");
 
-        } else if (resultingPath.size() <= 1){
+        } else if (resultingPath.size() <= 1) {
 
+            //It's already solved if the path size is less than or equal to 1
             notifyObservers("Already solved!");
 
         } else {
 
+            //Picks up the index 1 of the current config in the shortest path
             this.currentConfig = (HoppersConfig) resultingPath.get(1);
+
             this.board = currentConfig.getGrid();
             notifyObservers("Next step!");
 
         }
     }
 
+    /**
+     * Select method that picks two cords to move
+     * @param row: number of row that user selects
+     * @param col: number of col that user selects
+     */
     public void select(int row, int col) {
 
         String msg = "";
 
+        //If the user didn't select first cords
         if (!hasCords1) {
 
+
             this.selectedCord = new Coordinates(row, col);
+
+            //Value that the user selects
             valStart = this.board[row][col];
 
             //If the starting value is nto a frog, then it returns no frog at the specific cord message
@@ -171,15 +176,24 @@ public class HoppersModel {
             } else {
 
                 msg =  "Selected " + selectedCord;
+
+                //Sets row1 as the first row cord
                 this.row1 = row;
+
+                //Sets col1 as the first col cord
                 this.col1 = col;
+
+                //Once it's been selected, it will be set to true
                 hasCords1 = true;
 
             }
 
         } else {
 
+            //Represents the second selected coordinates
             Coordinates endCord = new Coordinates(row, col);
+
+            //Value that the frog will hop to, it must always be empty
             char valFinish = this.board[row][col];
 
             if (valFinish == '.') {
@@ -193,20 +207,28 @@ public class HoppersModel {
                 //The value that a selected frog hops over must be a green frog
                 if (hopVal == 'G') {
 
+                    //Checks to see if the frog hops over diagonal, vertical, or horizontal way
                     if (diagonalCheck(row1, col1, row, col) || (straightCheck(row1, col1, row, col))) {
 
+                        //Will set the value to where the frog hops to
                         this.board[row][col] = valStart;
+
+                        //Will set the value the frog hops over to as empty
                         this.board[hopRow][hopCol] = '.';
+
+                        //Sets the value to where the frog left to empty
                         this.board[row1][col1] = valFinish;
 
                         msg = "Jumped from " + selectedCord + "  to " + endCord;
 
+                        //Since the frog hops over, it will allow user to select a new frog
                         hasCords1 = false;
 
                     }
 
                 } else {
 
+                    //If frog can't hop over, then the user has chance to select a new frog
                     hasCords1 = false;
                     msg = "Can't jump from " + selectedCord + " to " + endCord;
 
@@ -214,6 +236,7 @@ public class HoppersModel {
 
             } else {
 
+                //If frog can't hop over, then the user has chance to select a new frog
                 hasCords1 = false;
                 msg = "Can't jump from " + selectedCord + " to " + endCord;
 
@@ -225,6 +248,14 @@ public class HoppersModel {
 
     }
 
+    /**
+     * Checks to see if the frog hops over diagonal
+     * @param row1: num of row for first selected cord
+     * @param col1: num of col for first selected cord
+     * @param row2: num of row for second selected cord
+     * @param col2: num of col for second selected cord
+     * @return: True if the frog hops over diagonal, false if it doesn't
+     */
     private boolean diagonalCheck(int row1, int col1, int row2, int col2) {
 
         int rowCheck = row2 - row1;
@@ -248,9 +279,18 @@ public class HoppersModel {
 
         }
 
+        //If frog doesn't hop over diagonal, it will be false
         return false;
     }
 
+    /**
+     * Checks to see if frog hops over vertical or horizontal
+     * @param row1: num of row for first selected cord
+     * @param col1: num of col for first selected cord
+     * @param row2: num of row for second selected cord
+     * @param col2: num of col for second selected cord
+     * @return: True if frog hops over vertical or horizontal, false if it doesn't
+     */
     private boolean straightCheck(int row1, int col1, int row2, int col2) {
 
         int rowCheck = row2 - row1;
@@ -275,15 +315,36 @@ public class HoppersModel {
 
         }
 
+        //If frog doesn't hop over vertical or horizontal, then it will be false
         return false;
     }
 
-
-
+    /**
+     * Gets the value from the game board
+     * @param row: number of row
+     * @param col: number of col
+     * @return: value with current row and col
+     */
     public char getValue(int row, int col) {
+
         return this.board[row][col];
+
     }
 
+    /**
+     * Gets current HoppersConfig
+     * @return: current HoppersConfig
+     */
+    public HoppersConfig getCurrentConfig() {
+
+        return this.currentConfig;
+
+    }
+
+    /**
+     * Builds the game board
+     * @return: The entire game board of hoppers
+     */
     public String toString() {
 
         StringBuilder result = new StringBuilder("   ");

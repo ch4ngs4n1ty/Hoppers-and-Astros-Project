@@ -14,28 +14,35 @@ import java.util.*;
 // TODO: implement your HoppersConfig for the common solver
 
 /**
+ * The representation of Hoppers configuration
  *
- *
- *
+ * @author Ethan Chang
  */
 
 public class HoppersConfig implements Configuration{
-
+    /** number of rows */
     private int rows;
+    /** number of cols */
     private int cols;
+    /** 2d char array of grid */
     private char grid[][];
+    /** possible eight moves */
     private final int[][] evenMoves = {{-2, -2}, {-2, 2}, {2, -2}, {2, 2}, {-4, 0}, {4, 0}, {0, -4}, {0, 4}};
+    /** possible four moves */
     private final int[][] oddMoves = {{-2, -2}, {-2, 2}, {2, -2}, {2, 2}};
+    /** empty char */
     private char EMPTY = '.';
+    /** invalid char */
     private char INVALID = '*';
+    /** green frog char */
     private char GREEN = 'G';
+    /** red frog char */
     private char RED = 'R';
-
 
     /**
      * HopperConfig constructor that reads the file and then stores each value inside the grid
      * @param filename: Filename from hopper text files
-     * @throws IOException
+     * @throws IOException: if file name is invalid or empty
      */
     public HoppersConfig(String filename) throws IOException {
 
@@ -306,7 +313,10 @@ public class HoppersConfig implements Configuration{
         return result;
     }
 
-
+    /**
+     * Deep hash on the grid
+     * @return: int of hashcode for the grid
+     */
     @Override
     public int hashCode() {
 

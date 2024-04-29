@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.nio.file.Paths;
 
 /**
- * Hoppers game that's been made by
+ * Hoppers game that's been made by GUI and HoppersModel.
  * The class involves MVC.
  * A game with hopping frogs on pond with lily pads.
  * Can win by only having a Red frog on the pond.
@@ -30,20 +30,35 @@ import java.nio.file.Paths;
 
 public class HoppersGUI extends Application implements Observer<HoppersModel, String> {
 
+    /** model of HoppersModel */
     private HoppersModel model;
+    /** stage for the gui */
     private Stage stage;
+    /** current config of HoppersConfig */
     private HoppersConfig currentConfig;
+    /** current file name */
     private String currentFilename;
+    /** number of rows */
     private int row;
+    /** number of cols */
     private int col;
+    /** 2d array of board */
     private char board[][];
+    /** current label */
     private Label text;
+    /** game board of hoppers */
     private GridPane gameBoard;
+    /** 2d array of buttons that will be inside GridPane */
     private Button gridButtons[][];
+    /** whole board of the GUI*/
     private BorderPane wholeBoard;
+    /** green frog */
     private static final char GREEN = 'G';
+    /** red frog */
     private static final char RED = 'R';
+    /** lily pads */
     private static final char LILYPAD = '.';
+    /** water */
     private static final char WATER = '*';
 
     /** The resources directory is located directly underneath the gui package */
@@ -58,20 +73,32 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
     /** The size of all icons, in square dimension */
     private final static int ICON_SIZE = 75;
 
+    /**
+     * Creates the model and adds the model to the observer
+     * @throws IOException: If filename is invalid or can't be found
+     */
     public void init() throws IOException {
 
         String filename = getParameters().getRaw().get(0);
         currentFilename = filename;
+
+        //Creates a new model
         this.model = new HoppersModel(currentFilename);
         this.model.addObserver(this);
 
     }
 
+    /**
+     * Constructs the game board of hoppers and buttons
+     * @param stage: the stage which represents window of GUI
+     * @throws Exception: if there are applications they want to catch
+     */
     @Override
     public void start(Stage stage) throws Exception {
 
         this.stage = stage;
 
+        //Creates a new hoppers config
         currentConfig = new HoppersConfig(currentFilename);
 
         row = currentConfig.getRows();
@@ -80,8 +107,11 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
         gridButtons = new Button[row][col];
 
         stage.setTitle("Hoppers GUI");
+
+        //Whole window of the GUI
         wholeBoard = new BorderPane();
 
+        //Label on the top of border pane
         FlowPane currentLabel = new FlowPane();
 
         text = new Label("Loaded: " + currentFilename);
@@ -105,7 +135,10 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
 
                 Button button = new Button();
                 button.setMaxSize(ICON_SIZE, ICON_SIZE);
+
+                //Creates button graphics for each val of the grid
                 buttonGraphics(button, val);
+
                 gridButtons[r][c] = button;
 
                 gameBoard.add(button, c, r);
@@ -113,8 +146,8 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
                 final int rowFinal = r;
                 final int colFinal = c;
 
-                button.setOnAction(e -> {
-                    model.select(rowFinal, colFinal);
+                button.setOnAction(e -> { //Sets on action everytime a button is pressed
+                    model.select(rowFinal, colFinal); //When button pressed, it will be selected
                 });
 
             }
@@ -122,6 +155,7 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
 
         wholeBoard.setCenter(gameBoard);
 
+        //Flow pane of load, reset, and hint that will be set at bottom of grid pane
         FlowPane buttonRow = new FlowPane();
 
         Button loadButton = new Button("Load");
@@ -135,7 +169,7 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
 
         buttonRow.getChildren().addAll(loadButton, resetButton, hintButton);
 
-        loadButton.setOnAction(e -> {
+        loadButton.setOnAction(e -> { //When load button pressed, it will open the file user selects and updates the game board
 
             FileChooser fileChooser = new FileChooser();
 
@@ -169,7 +203,7 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
 
         });
 
-        resetButton.setOnAction(e -> {
+        resetButton.setOnAction(e -> { //Resets the entire game board to the start
             try {
 
                 model.reset();
@@ -183,7 +217,7 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
 
         });
 
-        hintButton.setOnAction(e -> {
+        hintButton.setOnAction(e -> { //Shows the next hint everytime user clicks hint
 
             model.hint();
             updateGameBoard();
@@ -200,6 +234,13 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
 
     }
 
+    /**
+     * Called by the model, model.HoppersModel, whenever there is a state change
+     * that needs to be updated by the GUI.
+     *
+     * @param hoppersModel the HoppersModel
+     * @param msg the status message sent by the model
+     */
     @Override
     public void update(HoppersModel hoppersModel, String msg) {
 
@@ -207,6 +248,7 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
 
             text.setText(msg);
 
+            //When the user loads a new file, it will get current configuration from hoppersModel
             HoppersConfig currentConfiguration = hoppersModel.getCurrentConfig();
 
             gameBoard = new GridPane();
@@ -243,12 +285,16 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
 
             wholeBoard.setCenter(gameBoard);
 
+            //Can adjust size when there are smaller files
             stage.sizeToScene();
 
         }
 
     }
 
+    /**
+     * Loads the new game board everytime the user loads it
+     */
     private void loadGameBoard() {
 
         gameBoard.getChildren().clear();
@@ -275,6 +321,9 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
         }
     }
 
+    /**
+     * When user starts moving frogs, the model will update and change the game board
+     */
     private void updateGameBoard() {
 
         for (int r = 0; r < row; r++) {
@@ -284,11 +333,17 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
                 char val = model.getValue(r, c);
 
                 buttonGraphics(button, val);
+
             }
         }
 
     }
 
+    /**
+     * Will set up the buttons with the specific images by checking values of buttons
+     * @param button: button in Grid Pane
+     * @param val: value of the button
+     */
     private void buttonGraphics(Button button, char val) {
 
         if (val == RED) {
@@ -310,8 +365,13 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
         }
 
         button.setStyle("-fx-background-color: transparent; -fx-padding: 0; -fx-border-width: 0;");
+
     }
 
+    /**
+     * Main function to launch the game
+     * @param args the file
+     */
     public static void main(String[] args) {
         if (args.length != 1) {
             System.out.println("Usage: java HoppersPTUI filename");
