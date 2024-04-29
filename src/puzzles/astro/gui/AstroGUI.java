@@ -24,8 +24,6 @@ import java.util.HashMap;
 import java.util.List;
 
 public class AstroGUI extends Application implements Observer<AstroModel, String> {
-    /** The resources directory is located directly underneath the gui package */
-
     private String fileName;
     private AstroModel model;
     private Label text;
@@ -34,15 +32,12 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
     private int cols;
     private String[][] board;
     private BorderPane wholeBoard;
-    private Button gridButtons[][];
+    private Button[][] gridButtons;
     private GridPane gameBoard;
     private HashMap<String, Image> robotFiles;
 
     private Stage stage;
     private final static String RESOURCES_DIR = "resources/";
-
-    // for demonstration purposes
-    private Image robot = new Image(getClass().getResourceAsStream(RESOURCES_DIR+"robot-blue.png"));
     private Image earth = new Image(getClass().getResourceAsStream(RESOURCES_DIR+"earth.png"));
     private Image astro = new Image(getClass().getResourceAsStream(RESOURCES_DIR+"astro.png"));
 
@@ -56,6 +51,9 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
     private AstroConfig currentConfig;
 
 
+    /**
+     * adds all the robot files to the hashmap of bobot files with maps the String letter from the file to the color of the png file
+     */
     public void addRobotFiles(){
         robotFiles = new HashMap<>();
         robotFiles.put("B", new Image(getClass().getResourceAsStream(RESOURCES_DIR+"robot-blue.png")));
@@ -68,7 +66,9 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
         robotFiles.put("I", new Image(getClass().getResourceAsStream(RESOURCES_DIR+"robot-yellow.png")));
     }
 
-
+    /**
+     *creates the model and adds ourselves as the observer
+     */
     public void init() throws IOException {
         String filename = getParameters().getRaw().get(0);
         addRobotFiles();
@@ -77,19 +77,25 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
         this.model.addObserver(this);
 
     }
-
+    /**
+     * Construct the layout for the game.
+     *
+     * @param stage container (window) in which to render the GUI
+     */
     @Override
     public void start(Stage stage) throws Exception {
 
+        //sets stage to the current stage
         this.stage = stage;
 
+        // generates initial configuration from the provided file and gets values of the row, column, board and buttons for the game window
         AstroConfig currentConfig = new AstroConfig(this.fileName);
         this.rows = currentConfig.getNumRows();
         this.cols = currentConfig.getNumCols();
         this.board = currentConfig.getGrid();
         gridButtons = new Button[rows][cols];
 
-        wholeBoard = new BorderPane();
+        wholeBoard = new BorderPane(); //borderpane is used for the layout of the board
 
         // creates gameboard and sets it to the left of the window
         gameBoard = makeBackground(rows, cols);
@@ -104,25 +110,26 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
         wholeBoard.setTop(currentLabel);
 
 
-        // creates a flowpane consisting of load, reset and hint buttons
-        // adds the flowpane to the bottom of the window
+        // creates a flowpane consisting of load, reset and hint buttons and adds to bottom of the borderpane
         FlowPane buttonRow = new FlowPane();
-
         Button loadButton = new Button("Load");
         Button resetButton = new Button("Reset");
         Button hintButton = new Button("Hint");
 
-        hintButton.setOnAction(event -> {
+        hintButton.setOnAction(event -> { //calls model's hint method for hint button
             model.hint();
         });
 
-        resetButton.setOnAction(event -> {
+        resetButton.setOnAction(event -> { // calls model's reset method for reset button
             try {
                 model.reset();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         });
+
+        // load button opens up straight to the directory that holds the data files for the astro puzzle
+        //changes all the non-static instance variables tp the new config's variables
 
         loadButton.setOnAction(event -> {
             FileChooser fileChooser = new FileChooser();
@@ -171,13 +178,13 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
         buttonRow.setAlignment(Pos.CENTER);
         wholeBoard.setBottom(buttonRow);
 
-
+        //creates the n,s, w, e buttons for the controls and adds the center of borderpane
         GridPane controls = makeControls();
-
         controls.setAlignment(Pos.CENTER);
         wholeBoard.setCenter(controls);
 
-        //stage.setScene(scene);
+        // sets the scene to the borderpane containing the entire window
+        //sets title, stage and makes stake resizable
         Scene scene = new Scene(wholeBoard);
         stage.setScene(scene);
         stage.setTitle("AstroGUI");
@@ -187,6 +194,12 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
         stage.show();
     }
 
+    /**
+     * creates a gridpane of the game board with specified dimensions and adds imaged for each coordinate
+     * @param rows of gameboard
+     * @param cols of gameboard
+     * @return the gridpane for the background of gameboard
+     */
     public GridPane makeBackground(int rows, int cols){
         GridPane background = new GridPane();
 
@@ -214,8 +227,6 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
                 button.setOnAction(event -> {
                     this.model.select(finalRow, finalCol);
                 });
-                //button.setStyle("-fx-background-color: transparent; -fx-padding: 0; -fx-border-width: 0;");
-
                 // Add the button to the StackPane
                 cell.getChildren().add(button);
                 gridButtons[row][col] = button;
@@ -223,6 +234,12 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
         }
         return background;
     }
+
+    /**
+     * sets the image to each button coordinate
+     * @param button to set image  on
+     * @param val the string equaivalent of explorer or space or earth
+     */
     public void buttonImage(Button button, String val){
 
         if(val.equals(".")){
@@ -241,8 +258,6 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
 
             button.setGraphic(robotImageView);
 
-
-            //button.setGraphic(new ImageView(robot));
             button.setMaxSize(ICON_SIZE, ICON_SIZE);
         }
         button.setStyle("-fx-background-color: transparent; -fx-padding: 0; -fx-border-width: 0;");
@@ -277,21 +292,6 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
         });
         return controls;
     }
-
-//    @Override
-//    public void update(AstroModel astroModel, String msg) {
-//
-//        this.model = astroModel;
-//        this.rows = model.getRows();
-//        this.cols = model.getCols();
-//
-//        if (text != null) {
-//            text.setText(msg);
-//            //updateGameboard();
-//            gameBoard = makeBackground(rows, cols);
-//
-//        }
-//    }
 
     @Override
     public void update(AstroModel astroModel, String msg) {
@@ -335,7 +335,6 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
                     button.setOnAction(event -> {
                         this.model.select(finalRow, finalCol);
                     });
-                    //button.setStyle("-fx-background-color: transparent; -fx-padding: 0; -fx-border-width: 0;");
 
                     // Add the button to the StackPane
                     cell.getChildren().add(button);
@@ -343,13 +342,8 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
                 }
             }
             wholeBoard.setLeft(gameBoard);
-            //stage.setResizable(true);
             stage.sizeToScene();
-            //stage.setResizable(true);
         }
-//        stage.setResizable(true);
-//        stage.sizeToScene();
-
     }
 
     public void updateGameboard(){
@@ -363,6 +357,10 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
         }
     }
 
+    /**
+     * main function to launch the game
+     * @param args the file
+     */
     public static void main(String[] args) {
         if (args.length != 1) {
             System.out.println("Usage: java AstroGUI filename");

@@ -8,8 +8,11 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
 
-// TODO: implement your HoppersConfig for the common solver
-
+/**
+ * The representation of a clock configuration
+ *
+ * @author Ashwin Jagadeesh
+ */
 public class AstroConfig implements Configuration{
 
     private static int rows;
@@ -22,6 +25,11 @@ public class AstroConfig implements Configuration{
 
     private HashMap<String, Coordinates> explorers;
 
+    /**
+     * creates an initial config based on the file provided in the constructor
+     * @param filename of the astro puzzle
+     * @throws IOException if file is not found
+     */
     public AstroConfig(String filename) throws IOException {
 
         try (BufferedReader in = new BufferedReader(new FileReader(filename))) {
@@ -101,16 +109,28 @@ public class AstroConfig implements Configuration{
 
     }
 
+    /**
+     * getter method for row dimension
+     * @return number rows for current config
+     */
     public int getNumRows(){
         return this.rows;
     }
+
+    /**
+     * getter method for column dimension
+     * @return number columns for current config
+     */
     public int getNumCols(){
         return this.cols;
     }
-    public HashMap<String, Coordinates> getExplorers(AstroConfig astroConfig){
-        return this.explorers;
-    }
 
+    /**
+     * get ths value at the coordinates requested
+     * @param row
+     * @param col
+     * @return the string value of the given position on the grid
+     */
     public String getVal(int row, int col) {
         return grid[row][col];
     }
@@ -119,7 +139,7 @@ public class AstroConfig implements Configuration{
      * retreives all the horizontal neighbors of given explorer
      * @param explorer to check
      * @param row the row of the explorer
-     * @return Hashmap of neighboring explorer and their coordinates
+     * @return Hashmap of neighboring explorers and their coordinates
      */
     public HashMap<String, Coordinates> getRowNeighbors(String explorer, int row){
 
@@ -134,6 +154,12 @@ public class AstroConfig implements Configuration{
         return rowNeigh;
     }
 
+    /**
+     * retreives all the vertical neighbors of given explorer
+     * @param explorer to check
+     * @param col the column of the explorer
+     * @return Hashmap of neighboring explorers and their coordinates
+     */
     public HashMap<String, Coordinates> getColNeighbors(String explorer, int col){
 
 
@@ -154,7 +180,13 @@ public class AstroConfig implements Configuration{
         return astonautLoc.equals(home);
     }
 
-    // Method to find the left neighbor(s) of the current explorer
+
+    /**
+     * finds all the neighbors to left of given explorer
+     * @param explorerCoord coordinate of explorer we are trying to find left neighbors of
+     * @param rowNeighbors hashmap of all the horizontal neighbors of the given explorer
+     * @return an arraylist containing coordinates of all left neighbors of given explorer
+     */
     public ArrayList<Coordinates> findLeftNeighbors(Coordinates explorerCoord, HashMap<String, Coordinates> rowNeighbors){
         ArrayList<Coordinates> leftNeighbors = new ArrayList<>();
         for (Coordinates neighborCoord : rowNeighbors.values()){
@@ -165,8 +197,12 @@ public class AstroConfig implements Configuration{
         return leftNeighbors;
     }
 
-    // Method to find the right neighbor(s) of the current explorer
-    public ArrayList<Coordinates> findRightNeighbors(Coordinates explorerCoord, HashMap<String, Coordinates> rowNeighbors){
+    /**
+     * finds all the neighbors to right of given explorer
+     * @param explorerCoord coordinate of explorer we are trying to find righ neighbors of
+     * @param rowNeighbors hashmap of all the horizontal neighbors of the given explorer
+     * @return an arraylist containing coordinates of all right neighbors of given explorer
+     */    public ArrayList<Coordinates> findRightNeighbors(Coordinates explorerCoord, HashMap<String, Coordinates> rowNeighbors){
         ArrayList<Coordinates> rightNeighbors = new ArrayList<>();
         for (Coordinates neighborCoord : rowNeighbors.values()){
             if(neighborCoord.col() > explorerCoord.col()){
@@ -176,6 +212,12 @@ public class AstroConfig implements Configuration{
         return rightNeighbors;
     }
 
+    /**
+     * finds all the neighbors north of given explorer
+     * @param explorerCoord coordinate of explorer we are trying to find north neighbors of
+     * @param colNeighbors hashmap of all the vertical neighbors of the given explorer
+     * @return an arraylist containing coordinates of all north neighbors of given explorer
+     */
     public   ArrayList<Coordinates> findTopNeighbors(Coordinates explorerCoord, HashMap<String, Coordinates> colNeighbors){
         ArrayList<Coordinates> topNeighbors = new ArrayList<>();
         for (Coordinates neighborCoord : colNeighbors.values()){
@@ -185,6 +227,13 @@ public class AstroConfig implements Configuration{
         }
         return topNeighbors;
     }
+
+    /**
+     * finds all the neighbors south of given explorer
+     * @param explorerCoord coordinate of explorer we are trying to find south neighbors of
+     * @param colNeighbors hashmap of all the vertical neighbors of the given explorer
+     * @return an arraylist containing coordinates of all south neighbors of given explorer
+     */
     public   ArrayList<Coordinates> findBottomNeighbors(Coordinates explorerCoord, HashMap<String, Coordinates> colNeighbors){
         ArrayList<Coordinates> bottomNeighbors = new ArrayList<>();
         for (Coordinates neighborCoord : colNeighbors.values()){
@@ -214,6 +263,7 @@ public class AstroConfig implements Configuration{
                 ArrayList<Coordinates> rightNeighbors = findRightNeighbors(explorerCoord, rowNeighbors);
                 ArrayList<Coordinates> leftNeighbors = findLeftNeighbors(explorerCoord, rowNeighbors);
 
+                // checks the arraylist of left neighbors and adds a config with the left most movement of the explorer
                 if(!leftNeighbors.isEmpty()){
                     Coordinates leftMost = leftNeighbors.getFirst();
                     for(Coordinates neighbor : leftNeighbors){
@@ -224,6 +274,7 @@ public class AstroConfig implements Configuration{
                     neighbors.add(new AstroConfig(this, explorer.getKey(), new Coordinates(explorerCoord.row(), leftMost.col()+ 1)));
                 }
 
+                // checks the arraylist of right neighbors and adds a config with the right most movement of the explorer
                 if(!rightNeighbors.isEmpty()){
                     Coordinates rightMost = rightNeighbors.get(0);
                     for(Coordinates neighbor: rightNeighbors){
@@ -237,11 +288,14 @@ public class AstroConfig implements Configuration{
 
             //VERTICAL MOVEMENTS
             HashMap<String, Coordinates> colNeighbors = getColNeighbors(explorer.getKey(), explorerCoord.col());
+
+            // moves current explorer if possible
             if(!colNeighbors.isEmpty()){
 
                 ArrayList<Coordinates> topNeighbors = findTopNeighbors(explorerCoord, colNeighbors);
                 ArrayList<Coordinates> bottomNeighbors = findBottomNeighbors(explorerCoord, colNeighbors);
 
+                // checks the arraylist of top neighbors and adds a config with the top most movement of the explorer
                 if(!topNeighbors.isEmpty()){
                     Coordinates topMost = topNeighbors.getFirst();
                     for(Coordinates neighbor : topNeighbors){
@@ -251,6 +305,8 @@ public class AstroConfig implements Configuration{
                     }
                     neighbors.add(new AstroConfig(this, explorer.getKey(), new Coordinates(topMost.row() + 1, explorerCoord.col())));
                 }
+
+                // checks the arraylist of bottom neighbors and adds a config with the bottom most movement of the explorer
                 if(!bottomNeighbors.isEmpty()){
                     Coordinates bottomMost = bottomNeighbors.getFirst();
                     for(Coordinates neighbor : bottomNeighbors){
@@ -294,9 +350,12 @@ public class AstroConfig implements Configuration{
         }
 
         return result.toString();
-        //return null;
     }
 
+    /**
+     * getter method for the grid of the board
+     * @return the grid of current configuration
+     */
     public String[][] getGrid() {
         return this.grid;
     }

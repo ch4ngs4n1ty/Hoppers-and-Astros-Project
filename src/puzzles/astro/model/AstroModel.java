@@ -43,14 +43,28 @@ public class AstroModel {
         }
     }
 
+    /**
+     * creates a new game
+     * @param filename of the astro puzzle to load
+     * @throws IOException if file is not found
+     */
     public AstroModel(String filename) throws IOException {
         load(filename);
     }
 
+    /**
+     * retrieves the current configuration of the grif
+     * @return currentConfig
+     */
     public AstroConfig getCurrentConfig(){
         return this.currentConfig;
     }
 
+    /**
+     * loads the variables for the new puzzle and notifies observer of the loaded message
+     * @param filename of the new puzzle
+     * @throws IOException if file is not found
+     */
     public void load(String filename) throws IOException {
 
         currentConfig = new AstroConfig(filename);
@@ -62,24 +76,40 @@ public class AstroModel {
         this.reachedSolution = false;
 
         notifyObservers("Loaded: " + currentFilename);
-
-        //System.out.println("Loaded: " + currentFilename);
-        //System.out.println(toString());
-
     }
 
+    /**
+     * retrives the string value of the specified position given coordinates
+     * @param row of rid
+     * @param col of grid
+     * @return value at the position
+     */
     public String getVal(int row, int col){
         return board[row][col];
     }
 
+    /**
+     * gets the number of rows
+     * @return the rows
+     */
     public int getRows() {
         return rows;
     }
 
+    /**
+     * gets the number of cols
+     * @return the cols
+     */
     public int getCols() {
         return cols;
     }
 
+
+    /**
+     * method to select the position on the game board
+     * @param row of position
+     * @param col of position
+     */
     public void select(int row, int col){
         if (!reachedSolution){
             Coordinates selectedCoord = new Coordinates(row, col);
@@ -87,6 +117,8 @@ public class AstroModel {
             String msg = "";
 
             String pos = this.board[row][col];
+
+            //doesn't allow to select a point where there are no explorers
             if (pos.equals(".") || pos.equals("*") || row > rows-1 || col > cols-1){
                 msg = "No piece at " + selectedCoord;
             }
@@ -101,6 +133,10 @@ public class AstroModel {
 
     }
 
+    /**
+     * checks if the astronaut has reached the home position
+     * @return whethere astronaut is at home or nah
+     */
     public boolean reachedSolution(){
         return this.reachedSolution;
     }
@@ -120,16 +156,18 @@ public class AstroModel {
         cols = currentConfig.getNumCols();
         board = currentConfig.getGrid();
         notifyObservers("Puzzle reset");
-
-        //System.out.println("Puzzle reset!");
     }
 
+    /**
+     * moves the selected explorer to the specified cardinal direction
+     * @param m is the string value of north south east or west
+     */
     public void move(String m) {
-        if(reachedSolution){
+        if(reachedSolution){ // doesn't move if the puzzle is already solved
             notifyObservers("Already solved");
             return;
         }
-        if (selectedCoordinate == null) {
+        if (selectedCoordinate == null) { //doesn't move if the piece isn't selected
             notifyObservers("No piece selected");
             return;
         }
@@ -137,6 +175,8 @@ public class AstroModel {
         String explorer = board[selectedCoordinate.row()][selectedCoordinate.col()];
         Coordinates newC = null;
 
+
+        // calls teh corresponding helper method for move
         if (m.equals("n")) {
             newC = moveNorth(explorer);
         } else if (m.equals("s")) {
@@ -149,6 +189,7 @@ public class AstroModel {
             return;
         }
 
+        // notifies observer if the postion moved is a new spot and based on the corresponding move direction
         if (newC == null || newC.equals(selectedCoordinate)) {
             if (newC == null || newC.equals(selectedCoordinate)) {
                 String direction;
@@ -173,26 +214,11 @@ public class AstroModel {
         selectedCoordinate = null;
     }
 
-
-
-    public Coordinates moveNorth(String explorer){
-        HashMap<String, Coordinates> colNeigh= currentConfig.getColNeighbors(explorer, selectedCoordinate.col());
-        if(colNeigh.isEmpty()){
-            return selectedCoordinate;
-        }
-        ArrayList<Coordinates> topNeighbors = currentConfig.findTopNeighbors(selectedCoordinate, colNeigh);
-        Coordinates topMost = topNeighbors.getFirst();
-        if(!topNeighbors.isEmpty()){
-            for(Coordinates neighbor : topNeighbors){
-                if(neighbor.row() > topMost.row()){
-                    topMost = neighbor;
-                }
-            }
-            topMost = new Coordinates(topMost.row() + 1, topMost.col());
-        }
-        return topMost;
-    }
-
+    /**
+     * moved the explorer to the south-most position
+     * @param explorer to move
+     * @return the coordinate of the south-most possible movement
+     */
     public Coordinates moveSouth(String explorer) {
         HashMap<String, Coordinates> colNeigh = currentConfig.getColNeighbors(explorer, selectedCoordinate.col());
         if (colNeigh.isEmpty()) {
@@ -218,6 +244,11 @@ public class AstroModel {
         return new Coordinates(bottomMost.row() - 1, bottomMost.col());
     }
 
+    /**
+     * moved the explorer to the east-most position
+     * @param explorer to move
+     * @return the coordinate of the east-most possible movement
+     */
     public Coordinates moveEast(String explorer) {
         HashMap<String, Coordinates> rowNeigh = currentConfig.getRowNeighbors(explorer, selectedCoordinate.row());
         if (rowNeigh.isEmpty()) {
@@ -243,6 +274,11 @@ public class AstroModel {
         return new Coordinates(rightMost.row(), rightMost.col() -1);
     }
 
+    /**
+     * moved the explorer to the west-most position
+     * @param explorer to move
+     * @return the coordinate of the west-most possible movement
+     */
     public Coordinates moveWest(String explorer) {
         HashMap<String, Coordinates> rowNeigh = currentConfig.getRowNeighbors(explorer, selectedCoordinate.row());
         if (rowNeigh.isEmpty()) {
@@ -268,6 +304,32 @@ public class AstroModel {
         return new Coordinates(leftMost.row(), leftMost.col() + 1);
     }
 
+    /**
+     * moved the explorer north to the north most position
+     * @param explorer to move
+     * @return the coordinate of the topmost possible movement
+     */
+    public Coordinates moveNorth(String explorer){
+        HashMap<String, Coordinates> colNeigh= currentConfig.getColNeighbors(explorer, selectedCoordinate.col());
+        if(colNeigh.isEmpty()){
+            return selectedCoordinate;
+        }
+        ArrayList<Coordinates> topNeighbors = currentConfig.findTopNeighbors(selectedCoordinate, colNeigh);
+        Coordinates topMost = topNeighbors.getFirst();
+        if(!topNeighbors.isEmpty()){
+            for(Coordinates neighbor : topNeighbors){
+                if(neighbor.row() > topMost.row()){
+                    topMost = neighbor;
+                }
+            }
+            topMost = new Coordinates(topMost.row() + 1, topMost.col());
+        }
+        return topMost;
+    }
+
+    /**
+     * sets the config the next config of the shortest path to solution (if a path exists)
+     */
     public void hint(){
         if(!reachedSolution){
             Solver solveAstroPuzzle = new Solver(currentConfig);
@@ -282,7 +344,6 @@ public class AstroModel {
                 if(currentConfig.isSolution()){
                     reachedSolution = true;
                 }
-
             }
         }
         else{
@@ -290,7 +351,10 @@ public class AstroModel {
         }
     }
 
-
+    /**
+     * tostring of the grid layout and dimensions
+     * @return string value of the board layout
+     */
     public String toString() {
         StringBuilder result = new StringBuilder("   ");
 

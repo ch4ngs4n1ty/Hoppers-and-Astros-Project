@@ -8,16 +8,25 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 
+/**
+ * representation of an Astro game with main program to be run
+ * @author Ashwin Jagadeesh
+ */
 public class Astro {
+
+    /**
+     * the main method that prints out the shortest path from start to end dice pattern indicated by command line argument
+     *
+     * @param args expected command line arguement is the start pattern, end patter, dice face numbers in order
+     */
     public static void main(String[] args){
         if (args.length != 1) {
             System.out.println("Usage: java Astro filename");
         } else{
             try{
+                // created a starting configuration based on the command and prints the initial layout
                 String filename = args[0];
-
                 AstroConfig startConfig = new AstroConfig(filename);
-
                 System.out.println("File: data/astro/" + filename);
                 System.out.print(startConfig);
 
@@ -29,6 +38,7 @@ public class Astro {
                 System.out.println("Total configs: "+ solveAstroPuzzle.getTotalConfigs() + "\nUnique configs: "
                         + solveAstroPuzzle.getUniqueConfigs());
 
+                // prints the shortest path from the given configuration
                 int stepCount = 0;
                 if(resultingPath == null){
                     System.out.println("No solution");
