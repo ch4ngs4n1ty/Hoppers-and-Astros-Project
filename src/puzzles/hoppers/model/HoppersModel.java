@@ -10,20 +10,36 @@ import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.*;
 
+/**
+ * Contains the methods that can be used for PTUI and GUI Hoppers
+ * Represents the functionality of the hoppers game
+ *
+ * @author Ethan Chang
+ */
+
 public class HoppersModel {
+
     /** the collection of observers of this model */
     private final List<Observer<HoppersModel, String>> observers = new LinkedList<>();
-
     /** the current configuration */
     public HoppersConfig currentConfig;
+    /** the current file name */
     private String currentFilename;
+    /** number of rows  */
     private static int rows;
+    /** number of cols  */
     private static int cols;
+    /** 2d array of char board  */
     private char board[][];
+    /** cord that's been selected  */
     private Coordinates selectedCord;
+    /** first val that's selected  */
     private char valStart;
+    /** num of row that's been selected */
     private int row1;
+    /** num of col that's been selected */
     private int col1;
+    /** checks to see if the first cord has been selected */
     private boolean hasCords1 = false;
 
 
@@ -33,7 +49,9 @@ public class HoppersModel {
      * @param observer the view
      */
     public void addObserver(Observer<HoppersModel, String> observer) {
+
         this.observers.add(observer);
+
     }
 
     /**
@@ -46,6 +64,11 @@ public class HoppersModel {
         }
     }
 
+    /**
+     * HoppersModel constructor
+     * @param filename: Filename of hoppers txt file
+     * @throws IOException: If filename is wrong or can't be found
+     */
     public HoppersModel(String filename) throws IOException {
 
         //Loads the current file name
@@ -53,8 +76,14 @@ public class HoppersModel {
 
     }
 
+    /**
+     * Loads the current filename and the board
+     * @param filename: Current filename that's been loaded
+     * @throws IOException: If filename is wrong or can't be found
+     */
     public void load(String filename) throws IOException {
 
+        //Creates a new current config from HoppersConfig
         currentConfig = new HoppersConfig(filename);
         this.currentFilename = filename;
 
@@ -62,18 +91,21 @@ public class HoppersModel {
         cols = currentConfig.getCols();
         board = currentConfig.getGrid();
 
+        //Once the file is loaded, it will notify observers
         notifyObservers("Loaded: " + currentFilename);
 
     }
 
     /**
      * Resets an entire board to the start of the current board
-     * @throws IOException
+     * @throws IOException: If filename is wrong or can't be found
      */
     public void reset() throws IOException {
 
+        //New currentConfig will be updated
         currentConfig = new HoppersConfig(this.currentFilename);
 
+        //Loads the new current file
         load(currentFilename);
 
         rows = currentConfig.getRows();
@@ -82,17 +114,26 @@ public class HoppersModel {
 
         hasCords1 = false;
 
+        //Notifies observer that the puzzle has been reset
         notifyObservers("Puzzle reset!");
 
     }
 
+    /**
+     * Gets current HoppersConfig
+     * @return: current HoppersConfig
+     */
     public HoppersConfig getCurrentConfig() {
 
         return this.currentConfig;
 
     }
 
+    /**
+     * Gives the hint to the user
+     */
     public void hint(){
+
         Solver solveHopperPuzzle = new Solver(currentConfig);
         LinkedList<Configuration> resultingPath = (LinkedList<Configuration>) solveHopperPuzzle.solve(currentConfig);
 

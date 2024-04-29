@@ -9,18 +9,19 @@ import java.io.ObjectInputFilter;
 import java.util.Collection;
 
 /**
- * Hoppers game that's been made by
- * The class involves MVC.
- * A game with hopping frogs on pond with lily pads.
- * Can win by only having a Red frog on the pond.
+ * Hopper's Solver to find the shortest path for each hopper's txt files
+ * Shows step by step how to solve puzzle
  *
  * @author Ethan Chang
  */
 
 public class Hoppers {
     public static void main(String[] args) {
+
         if (args.length != 1) {
+
             System.out.println("Usage: java Hoppers filename");
+
         } else {
 
             String filename = args[0];
@@ -29,12 +30,15 @@ public class Hoppers {
 
                 System.out.println("File: data/hoppers/" + filename);
 
+                //Gets the start config for HoppersConfig
                 HoppersConfig startConfig = new HoppersConfig(filename);
 
                 System.out.println(startConfig);
 
+                //Builds the solver for HoppersConfig
                 Solver hoppersPath = new Solver(startConfig);
 
+                //Solves the HoppersConfig and then builds the path
                 Collection<Configuration> path = hoppersPath.solve(startConfig);
 
                 System.out.println("Total configs: " + hoppersPath.getTotalConfigs());
@@ -61,7 +65,9 @@ public class Hoppers {
 
 
             } catch (IOException e) {
+
                 System.err.println(e);
+                
             }
 
         }
